@@ -44,7 +44,7 @@ void TunnelShift(float shift)
 
 inline Color TunnelPixel(unsigned int i)
 {
-	Vector3 view = tunnel_vecs[i].transformed(tunnel_rot);
+	Vector3 view = tunnel_vecs[i];//.transformed(tunnel_rot);
 
 	const float r = 2.0f;
 	const float fog_start = 2.0f;
