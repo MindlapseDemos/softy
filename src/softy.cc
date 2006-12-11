@@ -3,19 +3,18 @@
 #include <SDL/SDL.h>
 #include "color.h"
 
-// svn comment
-
 bool init();
 void redraw();
 void handle_event(SDL_Event *event);
 
-SDL_Surface *fb;
+SDL_Surface *fbsurf;
+unsigned int *fb;
 bool quit = false;
 
 int main(int argc, char **argv)
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-	if(!(fb = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE))) {
+	if(!(fbsurf = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE))) {
 		fprintf(stderr, "failed to init video\n");
 		return EXIT_FAILURE;
 	}
@@ -45,8 +44,14 @@ bool init()
 
 void redraw()
 {
-	SDL_FillRect(fb, 0, 0xff0000);
-	SDL_Flip(fb);
+	SDL_FillRect(fbsurf, 0, 0xff0000);
+	if(SDL_MUSTLOCK(fbsurf)) SDL_LockSurface(fbsurf);
+	fb = (unsigned int*)fbsurf->pixels;
+	
+	// call any part functions
+	
+	if(SDL_MUSTLOCK(fbsurf)) SDL_UnlockSurface(fbsurf);
+	SDL_Flip(fbsurf);
 }
 
 void handle_event(SDL_Event *event)

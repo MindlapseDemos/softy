@@ -11,6 +11,6 @@ struct Image
 	Color *pixels;
 };
 
-
+void blit(Image *dst, int xpos, int ypos, const Image *src);
 
 #endif // ndef _IMAGE_H_
