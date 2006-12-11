@@ -6,7 +6,7 @@ bin = softy
 dbg = -g
 #opt = -O3 -ffast-math
 
-inc = -Isrc -Ivmath
+inc = -Isrc -Isrc/vmath
 
 CFLAGS = -std=c89 -pedantic -Wall $(dbg) $(opt) $(inc) `sdl-config --cflags`
 CXXFLAGS = -ansi -pedantic -Wall $(dbg) $(opt) $(inc) `sdl-config --cflags`

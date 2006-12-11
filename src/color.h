@@ -23,10 +23,10 @@ inline Color Lerp(const Color &c1, const Color &c2, unsigned char p)
 
 	Color ret;
 
-	ret.r = r;
-	ret.g = g;
-	ret.b = b;
-	ret.a = a;
+	ret.c.r = r;
+	ret.c.g = g;
+	ret.c.b = b;
+	ret.c.a = a;
 
 	return ret;
 }
