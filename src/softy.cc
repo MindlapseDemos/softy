@@ -3,6 +3,8 @@
 #include <SDL/SDL.h>
 #include "color.h"
 
+// svn comment
+
 bool init();
 void redraw();
 void handle_event(SDL_Event *event);
