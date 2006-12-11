@@ -1,3 +1,4 @@
+#if 0
 #include <stdio.h>
 #include <stdlib.h>
 #include "perlin.h"
@@ -27,7 +28,6 @@ void eclipse_run(unsigned int time)
 	for(j=0; j<480; j++) {
 		for(i=0; i<640; i++) {
 			if(i >= xstart && i < xstart + IMG_X) {
-				*dst = *src++;
 			}
 		}
 	}
@@ -76,3 +76,4 @@ static unsigned char gimp_image[256 * 4] = {
 	"\0\377\32\0\0\377\30\0\0\377\26\0\0\377\24\0\0\377\22\0\0\377\20\0\0\377"
 	"\16\0\0\377\14\0\0\377\13\0\0\377\11\0\0\377"
 };
+#endif

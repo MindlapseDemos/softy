@@ -8,8 +8,8 @@ dbg = -g
 
 inc = -Isrc -Isrc/vmath
 
-CFLAGS = -std=c89 -pedantic -Wall $(dbg) $(opt) $(inc) `sdl-config --cflags`
-CXXFLAGS = -ansi -pedantic -Wall $(dbg) $(opt) $(inc) `sdl-config --cflags`
+CFLAGS = -Wall $(dbg) $(opt) $(inc) `sdl-config --cflags`
+CXXFLAGS = -Wall $(dbg) $(opt) $(inc) `sdl-config --cflags`
 LDFLAGS = `sdl-config --libs`
 
 $(bin): $(obj)
