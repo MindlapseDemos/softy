@@ -3,10 +3,12 @@
 #ifndef _IMAGE_H_
 #define _IMAGE_H_
 
+#include "color.h"
+
 struct Image
 {
 	int x, y;
-	unsigned int *pixels;
+	Color *pixels;
 };
 
 

@@ -12,4 +12,23 @@ union Color {
 	} __attribute__((packed)) c;
 };
 
+inline Color Lerp(const Color &c1, const Color &c2, unsigned char p)
+{
+	unsigned char omp = 255 - p;
+	unsigned int r, g, b, a;
+	r = (c1.c.r * omp + c2.c.r * p) / 256;
+	g = (c1.c.g * omp + c2.c.g * p) / 256;
+	b = (c1.c.b * omp + c2.c.b * p) / 256;
+	a = (c1.c.a * omp + c2.c.a * p) / 256;
+
+	Color ret;
+
+	ret.r = r;
+	ret.g = g;
+	ret.b = b;
+	ret.a = a;
+
+	return ret;
+}
+
 #endif	/* _COLOR_H_ */
