@@ -14,8 +14,8 @@ void InitTunnel()
 	{
 		for (unsigned int i=0; i<640; i++)
 		{
-			float x = (i - 320) / 320.0f;
-			float y = (j - 240) / 240.0f;
+			float x = ((float)i - 320) / 320.0f;
+			float y = ((float)j - 240) / 240.0f;
 			x *= 4.0f / 3.0f;
 			tunnel_vecs[i + 640 * j] = Vector3(x, y, 1.0f).normalized();
 		}
@@ -47,8 +47,8 @@ inline Color TunnelPixel(unsigned int i)
 	Vector3 view = tunnel_vecs[i].transformed(tunnel_rot);
 
 	const float r = 2.0f;
-	const float fog_start = 50.0f;
-	const float fog_end = 200.0f;
+	const float fog_start = 2.0f;
+	const float fog_end = 8.0f;
 	float cs = dot_product(view, Vector3(0, 0, 1));
 	float ang = acos(cs);
 	float sn = sin(ang);
@@ -66,21 +66,30 @@ inline Color TunnelPixel(unsigned int i)
 
 	float v = pt.z;
 	v += tunnel_shift;
-	v = fmod(v, 1);
+	//v = fmod(v, 1);
 
 	unsigned int cu, cv;
 	cu = (unsigned int) (255 * u);
+	cu %= 256;
 	cv = (unsigned int) (255 * v);
+	cv %= 256;
 
 	Color texel = tunnel_tex->pixels[cu + 256 * cv];
+
 
 	// apply fog
 	float fog_dist = dist - fog_start;
 	if (fog_dist > fog_end) return tunnel_fog_color;
 	float fog_factor = fog_dist / (fog_end - fog_start);
-	unsigned int cfc = (unsigned int) (255 * fog_factor);
+	int cfc = (int) (255 * fog_factor);
+
+
+	//printf("%f, %d\n", dist, cfc);
 
 	return Lerp(texel, tunnel_fog_color, cfc);
+	
+
+
 }
 	
 void Tunnel(Image &dst)

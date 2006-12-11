@@ -2,13 +2,15 @@
 #include <stdlib.h>
 #include <SDL/SDL.h>
 #include "color.h"
+#include "p_tunnel.h"
 
 bool init();
 void redraw();
 void handle_event(SDL_Event *event);
+void cleanup();
 
 SDL_Surface *fbsurf;
-unsigned int *fb;
+Color *fb;
 bool quit = false;
 
 int main(int argc, char **argv)
@@ -24,7 +26,7 @@ int main(int argc, char **argv)
 		SDL_Quit();
 		return EXIT_FAILURE;
 	}
-	
+
 	for(;;) {
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
@@ -33,23 +35,30 @@ int main(int argc, char **argv)
 		
 		redraw();
 	}
+
+	cleanup();
+
 	return 0;
 }
 
 bool init()
 {
+	tunnel_init();
+
 	return true;
 }
 
 
 void redraw()
 {
-	SDL_FillRect(fbsurf, 0, 0xff0000);
+	SDL_FillRect(fbsurf, 0, 0);
 	if(SDL_MUSTLOCK(fbsurf)) SDL_LockSurface(fbsurf);
-	fb = (unsigned int*)fbsurf->pixels;
+	fb = (Color*)fbsurf->pixels;
 	
 	// call any part functions
-	
+	tunnel_render(SDL_GetTicks() / 1000.0f);
+
+
 	if(SDL_MUSTLOCK(fbsurf)) SDL_UnlockSurface(fbsurf);
 	SDL_Flip(fbsurf);
 }
@@ -67,4 +76,9 @@ void handle_event(SDL_Event *event)
 	default:
 		break;
 	}
+}
+
+void cleanup()
+{
+	tunnel_cleanup();
 }
