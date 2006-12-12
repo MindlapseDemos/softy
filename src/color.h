@@ -17,18 +17,17 @@ inline Color Lerp(const Color &c1, const Color &c2, int p)
 	if (p < 0) p = 0;
 	if (p > 255) p = 255;
 	unsigned char omp = 255 - p;
-	unsigned int r, g, b, a;
+	unsigned int r, g, b;//, a;
 	r = (c1.c.r * omp + c2.c.r * p) / 256;
 	g = (c1.c.g * omp + c2.c.g * p) / 256;
 	b = (c1.c.b * omp + c2.c.b * p) / 256;
 	//a = (c1.c.a * omp + c2.c.a * p) / 256;
 
 	Color ret;
-
 	ret.c.r = r;
 	ret.c.g = g;
 	ret.c.b = b;
-	ret.c.a = a;
+	ret.c.a = 255;//a;
 
 	return ret;
 }

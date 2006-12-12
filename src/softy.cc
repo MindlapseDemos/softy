@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <SDL/SDL.h>
-#include "color.h"
+#include <SDL.h>
+#include "softy.h"
+
+// parts
 #include "p_tunnel.h"
+#include "p_eclipse.h"
 
 bool init();
 void redraw();
@@ -11,7 +14,7 @@ void cleanup();
 
 SDL_Surface *fbsurf;
 Color *fb;
-bool quit = false;
+Image *fbimg;
 
 int main(int argc, char **argv)
 {
@@ -43,21 +46,29 @@ int main(int argc, char **argv)
 
 bool init()
 {
-	tunnel_init();
+	fbimg = new Image;
+	fbimg->x = 640;
+	fbimg->y = 480;
+
+	if(!tunnel_init()) return false;
+	if(!eclipse_init()) return false;
 
 	return true;
 }
 
-
 void redraw()
 {
+	unsigned int msec = SDL_GetTicks();
+
 	SDL_FillRect(fbsurf, 0, 0);
 	if(SDL_MUSTLOCK(fbsurf)) SDL_LockSurface(fbsurf);
-	fb = (Color*)fbsurf->pixels;
+	fbimg->pixels = fb = (Color*)fbsurf->pixels;
 	
-	// call any part functions
-	tunnel_render(SDL_GetTicks() / 1000.0f);
-
+	// --- call any part functions ---
+	//tunnel_render(msec / 1000.0f);
+	if(msec >= S_ECLIPSE && msec < E_ECLIPSE) {
+		eclipse_run(msec);
+	}
 
 	if(SDL_MUSTLOCK(fbsurf)) SDL_UnlockSurface(fbsurf);
 	SDL_Flip(fbsurf);

@@ -4,7 +4,7 @@ obj = $(csrc:.c=.o) $(ccsrc:.cc=.o)
 bin = softy
 
 dbg = -g
-opt = -O3 -ffast-math
+#opt = -O3 -ffast-math
 
 inc = -Isrc -Isrc/vmath
 

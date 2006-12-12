@@ -5,12 +5,14 @@
 
 #include "color.h"
 
-struct Image
-{
+struct Image {
 	int x, y;
 	Color *pixels;
 };
 
 void blit(Image *dst, int xpos, int ypos, const Image *src);
+
+bool load_image(Image *img, const char *fname);
+bool save_image(const Image *img, const char *fname);
 
 #endif // ndef _IMAGE_H_
