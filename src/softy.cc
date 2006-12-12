@@ -19,7 +19,7 @@ Image *fbimg;
 int main(int argc, char **argv)
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-	if(!(fbsurf = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE))) {
+	if(!(fbsurf = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE | SDL_FULLSCREEN))) {
 		fprintf(stderr, "failed to init video\n");
 		return EXIT_FAILURE;
 	}
@@ -60,7 +60,7 @@ void redraw()
 {
 	unsigned int msec = SDL_GetTicks();
 
-	SDL_FillRect(fbsurf, 0, 0);
+	//SDL_FillRect(fbsurf, 0, 0);
 	if(SDL_MUSTLOCK(fbsurf)) SDL_LockSurface(fbsurf);
 	fbimg->pixels = fb = (Color*)fbsurf->pixels;
 	
@@ -90,7 +90,7 @@ void handle_event(SDL_Event *event)
 			TunnelReplica(repl);
 		}
 		if(event->key.keysym.sym == SDLK_DOWN) {
-			repl --;
+			if (repl > 1) repl --;
 			TunnelReplica(repl);
 		}
 		break;

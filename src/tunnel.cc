@@ -22,6 +22,8 @@ static float inv_fog_end;
 
 float sines[SINE_TABLE];
 
+Color bb[640*480];
+
 void InitTunnel()
 {
 	for (unsigned int j=0; j<480; j++)
@@ -116,7 +118,7 @@ inline Color TunnelPixel(unsigned int i)
 	//float u = dot_product(pt_nor, Vector3(0, 1, 0));
 	// NEW:
 	float u = pt.y;
-	u *= 2.0f;
+	u *= 1.0f;
 	// ENDOPT
 
 	float v = pt.z;
@@ -152,20 +154,45 @@ void Tunnel(Image &dst)
 	
 	rot_mat.set_rotation(tunnel_rot);
 
-	Color *pixels = dst.pixels;
+	Color *pixels = bb;
 	
-	for (unsigned int i=0; i<640 * 480; i+=replica)
+	static int flip = 0;
+	static int muf = 2;
+	
+	flip ++;
+	flip %= muf;
+	if (replica <= 2)
 	{
-		*pixels++ = TunnelPixel(i);
-	}
-	
-	// render replicas
+    	for (unsigned int i=0; i<640 * 480; i+=replica)
+    	{
+        
+             if ((i%muf) != flip) 
+             {
+                pixels++;
+                continue;
+             }
+               
+    		*pixels++ = TunnelPixel(i);
+    	}
+     }	
+     else
+     {
+         for (unsigned int i=0; i<640*480; i+=replica)
+         {
+             *pixels++ = TunnelPixel(i);    
+         }    
+     }
+    // render replicas
 	unsigned int rbytes = 640 * 480 * 4 / replica;
-	char *screen = (char*)dst.pixels;
+	rbytes -= rbytes % 4;
+	char *screen = (char*)bb;
 	for (unsigned int i=1; i<replica; i++)
 	{
 		screen += rbytes;
 		memcpy(screen, dst.pixels, rbytes);
 	}
+	
+	// update display
+	memcpy(dst.pixels, bb, 640*480*4);
 }
 
