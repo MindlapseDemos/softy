@@ -5,6 +5,7 @@
 #define SINE_TABLE 1000
 #define TEXSIZE 512
 
+static Vector3 tunnel_dir, tunnel_diry;
 static Color tunnel_fog_color;
 static Vector2 tunnel_rot;
 static Matrix3x3 rot_mat;
@@ -21,8 +22,6 @@ static float inv_fog_end;
 
 
 float sines[SINE_TABLE];
-
-Color bb[640*480];
 
 void InitTunnel()
 {
@@ -59,6 +58,10 @@ void TunnelFogColor(const Color &clr)
 void TunnelRot(const Vector2 &rot)
 {
 	tunnel_rot = rot;
+	Matrix3x3 r;
+	r.set_rotation(rot);
+	tunnel_dir = Vector3(0, 0, 1).transformed(r);
+	tunnel_diry = Vector3(1, 0, 0).transformed(r);
 }
 
 void TunnelTex(const Image *tex)
@@ -91,14 +94,9 @@ inline Color TunnelPixel(unsigned int i)
 {
 	static Vector3 view;
 	view = tunnel_vecs[i];
-	view.transform(rot_mat);
-
-	// OPT:
-	//float cs = dot_product(view, Vector3(0, 0, 1));
-	// NEW:
-	float cs = view.z;
-	// ENDOPT
 	
+	float cs = dot_product(view, tunnel_dir);
+		
 	// OPT:
 	//float sn = sinf(acosf(cs));
 	// NEW:
@@ -107,25 +105,22 @@ inline Color TunnelPixel(unsigned int i)
 	index = cs * SINE_TABLE;
 	if (index < 0) index = -index;
 	sn = sines[index];
+	// ENDOPT
 	
 	// avoid division with zero
+	// (and in the same time save calculations when full fog :) )
 	if (sn < inv_fog_end) return tunnel_fog_color;
 	float dist = 1.0f / sn;
 	
 	Vector3 pt = dist * view;
 
-	// OPT:
-	//float u = dot_product(pt_nor, Vector3(0, 1, 0));
-	// NEW:
-	float u = pt.y;
-	u *= 1.0f;
-	// ENDOPT
-
-	float v = pt.z;
+	static float u, v;
+	u = dot_product(pt, tunnel_diry);
+	v = dot_product(pt, tunnel_dir);
 	v += tunnel_shift;
 	v *= 0.5f;
 
-	unsigned int cu, cv;
+	static unsigned int cu, cv;
 	cu = (unsigned int) (255 * u);
 	cu %= TEXSIZE;
 	cv = (unsigned int) (255 * v);
@@ -133,11 +128,13 @@ inline Color TunnelPixel(unsigned int i)
 
 	Color texel = tunnel_tex->pixels[cu + TEXSIZE * cv];
 
+	// save fog calculations for clean pixels
 	if (sn > inv_fog_start) return texel;
 
 	// apply fog
 	float fog_dist = dist - fog_start;
 	float fog_factor = fog_dist / (fog_end - fog_start);
+	fog_factor *= fog_factor;
 	int cfc = (int) (255 * fog_factor);
 	return Lerp(texel, tunnel_fog_color, cfc);
 }
@@ -154,45 +151,21 @@ void Tunnel(Image &dst)
 	
 	rot_mat.set_rotation(tunnel_rot);
 
-	Color *pixels = bb;
+	Color *pixels = dst.pixels;
 	
-	static int flip = 0;
-	static int muf = 2;
-	
-	flip ++;
-	flip %= muf;
-	if (replica <= 2)
+	for (unsigned int i=0; i<640*480; i+=replica)
 	{
-    	for (unsigned int i=0; i<640 * 480; i+=replica)
-    	{
-        
-             if ((i%muf) != flip) 
-             {
-                pixels++;
-                continue;
-             }
-               
-    		*pixels++ = TunnelPixel(i);
-    	}
-     }	
-     else
-     {
-         for (unsigned int i=0; i<640*480; i+=replica)
-         {
-             *pixels++ = TunnelPixel(i);    
-         }    
-     }
-    // render replicas
+		*pixels++ = TunnelPixel(i);    
+	}
+
+	// render replicas
 	unsigned int rbytes = 640 * 480 * 4 / replica;
 	rbytes -= rbytes % 4;
-	char *screen = (char*)bb;
+	char *screen = (char*)dst.pixels;
 	for (unsigned int i=1; i<replica; i++)
 	{
 		screen += rbytes;
 		memcpy(screen, dst.pixels, rbytes);
 	}
-	
-	// update display
-	memcpy(dst.pixels, bb, 640*480*4);
 }
 

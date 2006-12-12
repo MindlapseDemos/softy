@@ -7,6 +7,7 @@
 #include "vmath.h"
 #include "color.h"
 
+Color * GetTunnelBuffer();
 void TunnelReplica(unsigned int n);
 void TunnelFogColor(const Color &clr);
 void TunnelRot(const Vector2 &rot);
