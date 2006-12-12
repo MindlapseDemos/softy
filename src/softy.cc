@@ -65,10 +65,10 @@ void redraw()
 	fbimg->pixels = fb = (Color*)fbsurf->pixels;
 	
 	// --- call any part functions ---
-	//tunnel_render(msec / 1000.0f);
-	if(msec >= S_ECLIPSE && msec < E_ECLIPSE) {
-		eclipse_run(msec);
-	}
+	tunnel_render(msec / 1000.0f);
+	//if(msec >= S_ECLIPSE && msec < E_ECLIPSE) {
+	//	eclipse_run(msec);
+	//}
 
 	if(SDL_MUSTLOCK(fbsurf)) SDL_UnlockSurface(fbsurf);
 	SDL_Flip(fbsurf);
@@ -76,11 +76,22 @@ void redraw()
 
 void handle_event(SDL_Event *event)
 {
+	static int repl = 1;
 	switch(event->type) {
 	case SDL_KEYDOWN:
 		if(event->key.keysym.sym == SDLK_ESCAPE) {
 			SDL_Quit();
 			exit(0);
+		}
+		break;
+	case SDL_KEYUP:
+		if(event->key.keysym.sym == SDLK_UP) {
+			repl ++;
+			TunnelReplica(repl);
+		}
+		if(event->key.keysym.sym == SDLK_DOWN) {
+			repl --;
+			TunnelReplica(repl);
 		}
 		break;
 

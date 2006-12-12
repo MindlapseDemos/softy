@@ -13,27 +13,19 @@ bool tunnel_init()
 
 	texture.x = texture.y = 256;
 	texture.pixels = new Color[256 * 256];
-
-	// create checker
-	unsigned int *pixels = (unsigned int *) texture.pixels;
-	for (unsigned int j=0; j<256; j++)
-	{
-		for (unsigned int i=0; i<256; i++)
-		{
-			if ((i < 128 && j < 128) || (i > 127 && j > 127))
-			{
-				*pixels++ = 0xFF0000;
-			}
-			else
-			{
-				*pixels++ = 0xFF;
-			}
-		}
+	
+	if(!load_image(&texture, "tunnel.ppm")) {
+		return false;
 	}
-
+	
 	TunnelTex(&texture);
 
 	return true;
+}
+
+float psin(float t)
+{
+	return sinf(t) * 0.5f + 0.5f;
 }
 
 void tunnel_render(float secs)
@@ -42,20 +34,28 @@ void tunnel_render(float secs)
 	screen.y = 480;
 	screen.pixels = fb;
 
-	Matrix3x3 rot;
-	rot.rotate(Vector3(secs / 8, secs / 3, 0));
+	TunnelFogStart(2.5f + 2.0f * sinf(10 * secs));
+	TunnelFogEnd(6.0f + sinf(10 * secs));
 
-	Color fog_color;
-	fog_color.packed = 0x221132;
-	TunnelFogColor(fog_color);
-	TunnelRot(rot);
+	//TunnelFogStart(8);
+	//TunnelFogEnd(9);
+
+	Color fog1, fog2;
+	fog1.packed = 0x22FFAA;
+	fog2.packed = 0xAA00FF;
+	TunnelFogColor(Lerp(fog1, fog2, 255* psin(10 * secs)));
+	TunnelFogAmp(1);
+	TunnelRot(Vector2(secs / 8, secs / 3));
 	TunnelShift(4 * secs);
+	
+	//TunnelRot(Vector2(0, 0));
+	
 	Tunnel(screen);
 }
 
 void tunnel_cleanup()
 {
-	delete [] texture.pixels;
+	//delete [] texture.pixels;
 }
 
 

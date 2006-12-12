@@ -7,10 +7,14 @@
 #include "vmath.h"
 #include "color.h"
 
+void TunnelReplica(unsigned int n);
 void TunnelFogColor(const Color &clr);
-void TunnelRot(const Matrix3x3 &rot);
+void TunnelRot(const Vector2 &rot);
 void TunnelTex(const Image *tex);
 void TunnelShift(float shift);
+void TunnelFogStart(float start);
+void TunnelFogEnd(float end);
+void TunnelFogAmp(float amp);
 void Tunnel(Image &dst);
 
 #endif // ndef _TUNNEL_H_
