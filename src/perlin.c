@@ -60,7 +60,7 @@ double noise1(double arg)
    return(lerp(sx, u, v));
 }
 
-double noise2(double vec[2])
+double noise2(double *vec)
 {
    int bx0, bx1, by0, by1, b00, b10, b01, b11;
    double rx0, rx1, ry0, ry1, *q, sx, sy, a, b, t, u, v;
@@ -96,7 +96,7 @@ double noise2(double vec[2])
    return lerp(sy, a, b);
 }
 
-double noise3(double vec[3])
+double noise3(double *vec)
 {
    int bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
    double rx0, rx1, ry0, ry1, rz0, rz1, *q, sy, sz, a, b, c, d, t, u, v;
@@ -146,7 +146,7 @@ double noise3(double vec[3])
    return lerp(sz, c, d);
 }
 
-void normalize2(double v[2])
+void normalize2(double *v)
 {
    double s;
 
@@ -155,7 +155,7 @@ void normalize2(double v[2])
    v[1] = v[1] / s;
 }
 
-void normalize3(double v[3])
+void normalize3(double *v)
 {
    double s;
 

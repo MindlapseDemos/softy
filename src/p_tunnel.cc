@@ -14,7 +14,7 @@ bool tunnel_init()
 	texture.x = texture.y = 256;
 	texture.pixels = new Color[256 * 256];
 	
-	if(!load_image(&texture, "tunnel.ppm")) {
+	if(!load_image(&texture, "data/tunnel.ppm")) {
 		return false;
 	}
 	
@@ -23,10 +23,7 @@ bool tunnel_init()
 	return true;
 }
 
-float psin(float t)
-{
-	return sinf(t) * 0.5f + 0.5f;
-}
+#define psin(t)	(sinf(t) * 0.5f + 0.5f)
 
 void tunnel_render(float secs)
 {

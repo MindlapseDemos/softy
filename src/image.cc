@@ -27,6 +27,61 @@ void blit(Image *dst, int xpos, int ypos, const Image *src)
 	}
 }
 
+void blit_ckey(Image *dst, int xpos, int ypos, const Image *src, const Color &key)
+{
+	if(xpos >= dst->x || ypos >= dst->y) return;
+
+	int sx = MAX(xpos, 0);
+	int sy = MAX(ypos, 0);
+
+	int xlen = MIN(src->x - (sx - xpos), dst->x - sx);
+	int ylen = MIN(src->y - (sy - ypos), dst->y - sy);
+
+	const Color *sptr = src->pixels + (sy - ypos) * src->x + (sx - xpos);
+	Color *dptr = dst->pixels + sy * dst->x + sx;
+
+	for(int j=0; j<ylen; j++) {
+		for(int i=0; i<xlen; i++) {
+			if(sptr->packed != key.packed) {
+				*dptr = *sptr;
+			}
+			dptr++;
+			sptr++;
+		}
+		dptr += dst->x - xlen;
+		sptr += src->x - xlen;
+	}
+}
+
+void blend(Image *dst, int xpos, int ypos, const Image *src, float t)
+{
+	if(xpos >= dst->x || ypos >= dst->y) return;
+
+	int fact = (int)(t * 255.0f);
+	int inv_fact = 256 - fact;
+
+	int sx = MAX(xpos, 0);
+	int sy = MAX(ypos, 0);
+
+	int xlen = MIN(src->x - (sx - xpos), dst->x - sx);
+	int ylen = MIN(src->y - (sy - ypos), dst->y - sy);
+
+	const Color *sptr = src->pixels + (sy - ypos) * src->x + (sx - xpos);
+	Color *dptr = dst->pixels + sy * dst->x + sx;
+
+	for(int j=0; j<ylen; j++) {
+		for(int i=0; i<xlen; i++) {
+			dptr->c.r = (sptr->c.r * fact + dptr->c.r * inv_fact) / 256;
+			dptr->c.g = (sptr->c.g * fact + dptr->c.g * inv_fact) / 256;
+			dptr->c.b = (sptr->c.b * fact + dptr->c.b * inv_fact) / 256;
+			dptr++;
+			sptr++;
+		}
+		dptr += dst->x - xlen;
+		sptr += src->x - xlen;
+	}
+}
+
 static int read_to_wspace(FILE *fp, char *buf, int bsize);
 
 bool load_image(Image *img, const char *fname)
