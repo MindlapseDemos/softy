@@ -143,6 +143,12 @@
 				RelativePath="..\src\p_eclipse.h">
 			</File>
 			<File
+				RelativePath="..\src\p_radial.cc">
+			</File>
+			<File
+				RelativePath="..\src\p_radial.h">
+			</File>
+			<File
 				RelativePath="..\src\p_tunnel.cc">
 			</File>
 			<File

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "image.h"
+#include <vmath.h>
 
 #define MIN(a, b)	((a) < (b) ? (a) : (b))
 #define MAX(a, b)	((a) > (b) ? (a) : (b))
@@ -79,6 +80,101 @@ void blend(Image *dst, int xpos, int ypos, const Image *src, float t)
 		}
 		dptr += dst->x - xlen;
 		sptr += src->x - xlen;
+	}
+}
+
+inline float InvSqrt(float x)
+{
+  float xhalf = 0.5f*x;
+  int i = *(int*)&x; // get bits for floating value
+  i = 0x5f375a86- (i>>1); // gives initial guess y0
+  x = *(float*)&i; // convert bits back to float
+  x = x*(1.5f-xhalf*x*x); // Newton step, repeating increases accuracy
+  return x;
+}
+
+inline Color rb(int x, int y, int cx, int cy, int w, int h, int intensity, float depth,
+				float inv_depth, Color *pixels)
+{
+	static float px, py, ctx, cty, difx, dify, invd, len2;
+	//static Vector2 p, center, dif;
+	
+	px = x;
+	py = y;
+	
+	ctx = cx;
+	cty = cy;
+	
+	difx = ctx - px;
+	dify = cty - py;
+
+	len2 = difx*difx + dify*dify;
+	invd = InvSqrt(len2);
+		
+	// rare case
+	if (inv_depth < invd)
+	{
+		invd = sqrtf(len2);
+		depth = 1.0f / invd;
+	}
+	
+	difx *= invd;
+	dify *= invd;
+	
+	px += difx * depth;
+	py += dify * depth;
+
+	int nx, ny;
+	nx = px + 0.5f;
+	ny = py + 0.5f;
+	
+	Color orig = pixels[x + w * y];
+	Color blend = pixels[nx + w * ny];
+	return Lerp(orig, blend, intensity);
+}
+
+void radial_blur(Image *img, int cx, int cy, float intensity, float depth)
+{
+	if (!img) return;
+	if (cx < 0) cx = 0;
+	if (cy < 0) cy = 0;
+	if (cx >= img->x) cx = img->x - 1;
+	if (cy >= img->y) cy = img->y - 1;
+
+	int inten = 255 * intensity;
+	float inv_depth = 1.0f / depth;
+
+	for (int j=cy; j>=0; j--)
+	{
+		for (int i=cx; i>=0; i--)
+		{
+			img->pixels[i + img->x * j] = rb(i, j, cx, cy, img->x, img->y, inten, depth,
+				inv_depth, img->pixels);
+		}
+	}
+	for (int j=cy+1; j<img->y; j++)
+	{
+		for (int i=cx; i>=0; i--)
+		{
+			img->pixels[i + img->x * j] = rb(i, j, cx, cy, img->x, img->y, inten, depth,
+				inv_depth, img->pixels);
+		}
+	}
+	for (int j=cy; j>=0; j--)
+	{
+		for (int i=cx+1; i<img->x; i++)
+		{
+			img->pixels[i + img->x * j] = rb(i, j, cx, cy, img->x, img->y, inten, depth,
+				inv_depth, img->pixels);
+		}
+	}
+	for (int j=cy+1; j<img->y; j++)
+	{
+		for (int i=cx+1; i<img->x; i++)
+		{
+			img->pixels[i + img->x * j] = rb(i, j, cx, cy, img->x, img->y, inten, depth,
+				inv_depth, img->pixels);
+		}
 	}
 }
 

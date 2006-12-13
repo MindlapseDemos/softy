@@ -1,7 +1,7 @@
 [Project]
 FileName=softy.dev
 Name=softy
-UnitCount=27
+UnitCount=29
 Type=1
 Ver=1
 ObjFiles=
@@ -309,6 +309,26 @@ BuildCmd=
 
 [Unit27]
 FileName=src\tunnel.h
+CompileCpp=1
+Folder=softy
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit28]
+FileName=src\p_radial.cc
+CompileCpp=1
+Folder=softy
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit29]
+FileName=src\p_radial.h
 CompileCpp=1
 Folder=softy
 Compile=1

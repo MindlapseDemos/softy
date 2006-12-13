@@ -6,6 +6,7 @@
 // parts
 #include "p_tunnel.h"
 #include "p_eclipse.h"
+#include "p_radial.h"
 
 bool init();
 void redraw();
@@ -72,8 +73,9 @@ bool init()
 	fbimg->x = 640;
 	fbimg->y = 480;
 
-	if(!tunnel_init()) return false;
-	if(!eclipse_init()) return false;
+	//if(!tunnel_init()) return false;
+	//if(!eclipse_init()) return false;
+	if (!radial_init()) return false;
 
 	start_time = SDL_GetTicks();
 
@@ -90,9 +92,10 @@ void redraw()
 	
 	// --- call any part functions ---
 	//tunnel_render(msec / 1000.0f);
-	if(msec >= S_ECLIPSE && msec < E_ECLIPSE) {
-		eclipse_run(msec);
-	}
+	//if(msec >= S_ECLIPSE && msec < E_ECLIPSE) {
+	//	eclipse_run(msec);
+	//}
+	radial_render(msec / 1000.0f);
 
 	if(SDL_MUSTLOCK(fbsurf)) SDL_UnlockSurface(fbsurf);
 	SDL_Flip(fbsurf);

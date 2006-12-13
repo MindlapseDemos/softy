@@ -13,6 +13,7 @@ struct Image {
 void blit(Image *dst, int xpos, int ypos, const Image *src);
 void blit_ckey(Image *dst, int xpos, int ypos, const Image *src, const Color &key);
 void blend(Image *dst, int xpos, int ypos, const Image *src, float t);
+void radial_blur(Image *img, int cx, int cy, float intensity, float depth);
 
 bool load_image(Image *img, const char *fname);
 bool save_image(const Image *img, const char *fname);
