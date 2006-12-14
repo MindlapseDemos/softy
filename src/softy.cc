@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL.h>
+#include <gl.h>
 #include "softy.h"
 #include "demo.h"
 
@@ -8,6 +9,8 @@
 #include "p_tunnel.h"
 #include "p_eclipse.h"
 #include "p_radial.h"
+#include "p_slimy.h"
+#include "p_amiga.h"
 
 bool init();
 void redraw();
@@ -67,21 +70,31 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+bool slimy_init_wrapper() {return slimy_init() != -1;}
+bool amiga_init_wrapper() {return amiga_init() != -1;}
+
 bool init()
 {	
 	fbimg = new Image;
 	fbimg->x = 640;
 	fbimg->y = 480;
 
+	fglCreateContext();
+
 	// add parts to demo system
+	add_part(Part(slimy_init_wrapper, slimy_run), "slimy");
 	add_part(Part(tunnel_init, tunnel_run), "tunnel");
 	add_part(Part(radial_init, radial_run), "radial");
+	add_part(Part(amiga_init_wrapper, amiga_run), "amiga");
+	//add_part(Part(eclipse_init, eclipse_run), "eclipse");
 	if (!init_demo()) return false;
 
 	// demoscript
-	add_part_inst("tunnel", 0, 5000, true);
-	add_part_inst("radial", 0, 10000, true);
-	add_part_inst("tunnel", 7000, 15000, true);
+	//add_part_inst("eclipse", 0, 21032141, true);
+	add_part_inst("amiga", 2000, 321432, true);
+	//add_part_inst("tunnel", 0, 5000, true);
+	//add_part_inst("radial", 0, 10000, true);
+	//add_part_inst("tunnel", 7000, 15000, true);
 
 
 	//if(!tunnel_init()) return false;

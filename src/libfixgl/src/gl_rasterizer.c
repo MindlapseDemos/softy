@@ -543,8 +543,8 @@ static inline void fill_scanlines(int starty, int endy) {
 							v = fixed_div(v, w);
 						}
 #endif
-						tx = fixed_int(fixed_mul(u, fixedi(tex->x))) & tex->xmask;
-						ty = fixed_int(fixed_mul(v, fixedi(tex->y))) & tex->ymask;
+						tx = fixed_round(fixed_mul(u, fixedi(tex->x))) & tex->xmask;
+						ty = fixed_round(fixed_mul(v, fixedi(tex->y))) & tex->ymask;
 
 						texel = tex->pixels[(ty << tex->xpow) + tx];
 						ir = (ir * GET_R(texel)) >> 8;

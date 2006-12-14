@@ -320,6 +320,10 @@ void glShadeModel(GLenum mode) {
 		glEnable(GL_SMOOTH);
 		break;
 
+	case GL_PHONG:
+		glEnable(GL_PHONG);
+		break;
+
 	default:
 		GL_ERROR(GL_INVALID_ENUM);
 		break;

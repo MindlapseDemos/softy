@@ -9,6 +9,7 @@
 extern SDL_Surface *fbsurf;
 Color *fb;
 extern Image *fbimg;
+extern unsigned int *cfb;
 
 Color second_buffer[640*480];
 
@@ -87,7 +88,7 @@ void run_demo(unsigned int msec)
 
 	// render
 	if(SDL_MUSTLOCK(fbsurf)) SDL_LockSurface(fbsurf);
-	fbimg->pixels = fb = (Color*)fbsurf->pixels;
+	cfb = (unsigned int*)(fbimg->pixels = fb = (Color*)fbsurf->pixels);
 	
 	if (!rpart.size())
 	{
@@ -150,7 +151,7 @@ void run_demo(unsigned int msec)
 			rpart[first].run(msec);
 
 		// render second part to second buffer
-		fbimg->pixels = fb = second_buffer;
+		cfb = (unsigned int*)(fbimg->pixels = fb = second_buffer);
 		if (slocal[second])
 			rpart[second].run(msec - segment_start[second]);
 		else
