@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\src\vmath;..\src;&quot;C:\SDL-1.2.11\include_win32&quot;"
+				AdditionalIncludeDirectories="..\src\vmath;..\src\libfixgl\src;..\src;&quot;C:\SDL-1.2.11\include_win32&quot;"
 				PreprocessorDefinitions="VISUALC"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -75,7 +75,7 @@
 				EnableFiberSafeOptimizations="FALSE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="..\src\vmath;..\src;&quot;C:\SDL-1.2.11\include_win32&quot;"
+				AdditionalIncludeDirectories="..\src\vmath;..\src\libfixgl\src;..\src;&quot;C:\SDL-1.2.11-vs\include&quot;"
 				PreprocessorDefinitions="VISUALC"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -278,6 +278,64 @@
 			</File>
 			<File
 				RelativePath="..\src\vmath\vmath_types.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="libfixgl"
+			Filter="">
+			<File
+				RelativePath="..\src\libfixgl\src\color_bits.h">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\fixed_point.c">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\fixed_point.h">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\gl.c">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\gl.h">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\gl_rasterizer.c">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\gl_rasterizer.h">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\immed.c">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\shade.c">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\shade.h">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\state.h">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\types.h">
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\vmath.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\libfixgl\src\vmath.h">
 			</File>
 		</Filter>
 	</Files>

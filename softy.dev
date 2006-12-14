@@ -27,7 +27,7 @@ CustomMakefile=
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=00000001010011000000ib
+CompilerSettings=00000001000001000000ib
 
 [Unit1]
 FileName=src\tunnel.cc

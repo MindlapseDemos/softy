@@ -86,15 +86,16 @@ void blend(Image *dst, int xpos, int ypos, const Image *src, float t)
 
 inline float InvSqrt(float x)
 {
+	/*
+	float xhalf = 0.5f*x;
+	nt i = *(int*)&x; // get bits for floating value
+	i = 0x5f375a86- (i>>1); // gives initial guess y0
+	x = *(float*)&i; // convert bits back to float
+	x = x*(1.5f-xhalf*x*x); // Newton step, repeating increases accuracy
+	return x;
+	*/
 
-  float xhalf = 0.5f*x;
-  int i = *(int*)&x; // get bits for floating value
-  i = 0x5f375a86- (i>>1); // gives initial guess y0
-  x = *(float*)&i; // convert bits back to float
-  x = x*(1.5f-xhalf*x*x); // Newton step, repeating increases accuracy
-
-  return x;
-
+	return 1.0f / sqrt(x);
 }
 
 inline Color rb(int x, int y, int cx, int cy, int w, int h, int intensity, float depth,

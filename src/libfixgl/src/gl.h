@@ -24,6 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "types.h"
 #include "fixed_point.h"
 
+#ifdef _MSC_VER
+#define inline
+#endif
+
 enum {
 	GL_SMOOTH,
 	GL_LIGHTING,
