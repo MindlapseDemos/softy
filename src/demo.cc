@@ -9,7 +9,7 @@
 extern SDL_Surface *fbsurf;
 Color *fb;
 extern Image *fbimg;
-extern unsigned int *cfb;
+unsigned int *cfb;
 
 Color second_buffer[640*480];
 

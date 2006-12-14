@@ -15,7 +15,7 @@ void gsphere(float sz, int iter, int hemisphere);
 
 static unsigned int amiga_tex;
 
-unsigned int *cfb;
+extern unsigned int *cfb;
 
 int amiga_init(void)
 {
@@ -42,7 +42,7 @@ void amiga_run(unsigned int msec)
 	float lpos[] = {-100, 100, 100, 1.0};
 	float amb[] = {0, 0, 0, 0};
 
-	float spec[] = {1, 1, 1, 0};
+	float white[] = {1, 1, 1, 0};
 
 	glEnable(GL_PHONG);
 	glDisable(GL_DEPTH_TEST);
@@ -60,7 +60,7 @@ void amiga_run(unsigned int msec)
 	glClearColor(0.1, 0.1, 0.1, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, white);
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 60.0);
 
 	glEnable(GL_TEXTURE_2D);
@@ -68,7 +68,8 @@ void amiga_run(unsigned int msec)
 	gsphere(1.0, 3, 0);
 	glDisable(GL_TEXTURE_2D);
 
-	/*glBegin(GL_QUADS);
+
+	glBegin(GL_QUADS);
 	glNormal3f(0, 1, 0);
 	glVertex3f(-10, 0, -10);
 	glVertex3f(-10, 0, 1);
@@ -76,7 +77,7 @@ void amiga_run(unsigned int msec)
 	glVertex3f(10, 0, -10);
 	glEnd();
 
-	glDisable(GL_LIGHTING);
+	/*glDisable(GL_LIGHTING);
 	glBegin(GL_QUADS);
 	glColor3f(1, 0, 0);
 	glVertex3f(-10, -1, 0);
