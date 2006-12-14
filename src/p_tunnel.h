@@ -7,6 +7,7 @@
 
 bool tunnel_init();
 void tunnel_render(float secs);
+void tunnel_run(unsigned int msec);
 void tunnel_cleanup();
 
 #endif // ndef _P_TUNNEL_H_

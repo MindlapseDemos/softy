@@ -131,6 +131,12 @@
 				RelativePath="..\src\color.h">
 			</File>
 			<File
+				RelativePath="..\src\demo.cc">
+			</File>
+			<File
+				RelativePath="..\src\demo.h">
+			</File>
+			<File
 				RelativePath="..\src\eclipse.cc">
 			</File>
 			<File

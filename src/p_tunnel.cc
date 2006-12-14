@@ -50,6 +50,11 @@ void tunnel_render(float secs)
 	Tunnel(screen);
 }
 
+void tunnel_run(unsigned int msec)
+{
+	tunnel_render(msec / 1000.0f);
+}
+
 void tunnel_cleanup()
 {
 	//delete [] texture.pixels;

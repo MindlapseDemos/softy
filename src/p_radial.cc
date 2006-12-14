@@ -21,6 +21,11 @@ void radial_render(float secs)
 	dst.pixels = fb;
 	
 	memcpy(fb, img.pixels, 640 * 480 * 4);
-	radial_blur(&dst, 320 + 100 * sin(secs*2), 240 + 100 * cos(secs*2),
-		 0.8f, 25.0f);//  + 4 * sin(secs * 13));
+	radial_blur(&dst, 320 + 100 * sin(secs*12), 240 + 100 * cos(secs*5),
+		 0.8f, 15.0f + 14 * sin(secs * 8));
+}
+
+void radial_run(unsigned int msec)
+{
+	radial_render(msec / 1000.0f);
 }
