@@ -7,6 +7,7 @@
 #include "p_tunnel.h"
 #include "p_eclipse.h"
 #include "p_radial.h"
+#include "p_slimy.h"
 
 bool init();
 void redraw();
@@ -16,6 +17,7 @@ void cleanup();
 SDL_Surface *fbsurf;
 Color *fb;
 Image *fbimg;
+extern "C" unsigned int *cfb;
 
 unsigned long start_time;
 
@@ -75,27 +77,37 @@ bool init()
 
 	//if(!tunnel_init()) return false;
 	//if(!eclipse_init()) return false;
-	if (!radial_init()) return false;
+	//if (!radial_init()) return false;
+	if(slimy_init() == -1) return false;
 
 	start_time = SDL_GetTicks();
 
 	return true;
 }
 
+#define FRAME_INTERVAL	25
+
 void redraw()
 {
+	static unsigned int prev_upd = -100;
 	unsigned int msec = SDL_GetTicks() - start_time;
+
+	if(msec - prev_upd < FRAME_INTERVAL) {
+		return;
+	}
+	prev_upd = msec;
 
 	//SDL_FillRect(fbsurf, 0, 0);
 	if(SDL_MUSTLOCK(fbsurf)) SDL_LockSurface(fbsurf);
-	fbimg->pixels = fb = (Color*)fbsurf->pixels;
+	cfb = (unsigned int*)(fbimg->pixels = fb = (Color*)fbsurf->pixels);
 	
 	// --- call any part functions ---
 	//tunnel_render(msec / 1000.0f);
 	//if(msec >= S_ECLIPSE && msec < E_ECLIPSE) {
 	//	eclipse_run(msec);
 	//}
-	radial_render(msec / 1000.0f);
+	//radial_render(msec / 1000.0f);
+	slimy_run(msec);
 
 	if(SDL_MUSTLOCK(fbsurf)) SDL_UnlockSurface(fbsurf);
 	SDL_Flip(fbsurf);

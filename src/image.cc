@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "image.h"
+#include "image_ppm.h"
 #include <vmath.h>
 
 #define MIN(a, b)	((a) < (b) ? (a) : (b))
@@ -124,9 +125,8 @@ inline Color rb(int x, int y, int cx, int cy, int w, int h, int intensity, float
 	px += difx * depth;
 	py += dify * depth;
 
-	int nx, ny;
-	nx = px + 0.5f;
-	ny = py + 0.5f;
+	int nx = (int)(px + 0.5f);
+	int ny = (int)(py + 0.5f);
 	
 	Color orig = pixels[x + w * y];
 	Color blend = pixels[nx + w * ny];
@@ -141,7 +141,7 @@ void radial_blur(Image *img, int cx, int cy, float intensity, float depth)
 	if (cx >= img->x) cx = img->x - 1;
 	if (cy >= img->y) cy = img->y - 1;
 
-	int inten = 255 * intensity;
+	int inten = (int)(255.0 * intensity);
 	float inv_depth = 1.0f / depth;
 
 	for (int j=cy; j>=0; j--)
@@ -178,96 +178,26 @@ void radial_blur(Image *img, int cx, int cy, float intensity, float depth)
 	}
 }
 
-static int read_to_wspace(FILE *fp, char *buf, int bsize);
-
 bool load_image(Image *img, const char *fname)
 {
-	FILE *fp;
-	char buf[64];
-	int bytes, raw;
-	unsigned int w, h, i, sz;
-	unsigned int *pixels;
-	
-	if(!(fp = fopen(fname, "rb"))) {
-		fprintf(stderr, "load_ppm(%s): ", fname);
-		perror("open failed");
-		return 0;
-	}
-	
-	bytes = read_to_wspace(fp, buf, 64);
-	if(buf[0] != 'P' || (buf[1] != '6' && buf[1] != '3')) {
-		fprintf(stderr, "%s is not a ppm file\n", fname);
-		fclose(fp);
-		return 0;
-	}
-	raw = buf[1] == '6';
-
-	if((bytes = read_to_wspace(fp, buf, 64)) == 0) {
-		fclose(fp);
+	int w, h;
+	void *pixels = load_ppm(fname, &w, &h);
+	if(!pixels) {
 		return false;
 	}
-	if(!isdigit(*buf)) {
-		fprintf(stderr, "load_ppm: invalid width: %s\n", buf);
-		fclose(fp);
-		return false;
-	}
-	w = atoi(buf);
-
-	if((bytes = read_to_wspace(fp, buf, 64)) == 0) {
-		fclose(fp);
-		return false;
-	}
-	if(!isdigit(*buf)) {
-		fprintf(stderr, "load_ppm: invalid height: %s\n", buf);
-		fclose(fp);
-		return false;
-	}
-	h = atoi(buf);
-
-	if((bytes = read_to_wspace(fp, buf, 64)) == 0) {
-		fclose(fp);
-		return false;
-	}
-	if(!isdigit(*buf) || atoi(buf) != 255) {
-		fprintf(stderr, "load_ppm: invalid or unsupported max value: %s\n", buf);
-		fclose(fp);
-		return false;
-	}
-
-	if(!(pixels = (unsigned int*)malloc(w * h * sizeof *pixels))) {
-		fprintf(stderr, "load_ppm: malloc failed\n");
-		fclose(fp);
-		return false;
-	}
-
-	sz = h * w;
-	for(i=0; i<sz; i++) {
-		int r = fgetc(fp);
-		int g = fgetc(fp);
-		int b = fgetc(fp);
-
-		if(r == -1 || g == -1 || b == -1) {
-			free(pixels);
-			fclose(fp);
-			fprintf(stderr, "load_ppm: EOF while reading pixel data\n");
-			return false;
-		}
-		pixels[i] = (r << 16) | (g << 8) | b;
-	}
-	fclose(fp);
 
 	try {
 		img->pixels = new Color[w * h];
-		memcpy(img->pixels, pixels, w * h * sizeof *pixels);
+		memcpy(img->pixels, pixels, w * h * 4);
 		img->x = w;
 		img->y = h;
 	}
 	catch(...) {
-		free(pixels);
+		free_ppm(pixels);
 		return false;
 	}
 
-	free(pixels);
+	free_ppm(pixels);
 	return true;
 }
 
@@ -289,25 +219,4 @@ bool save_image(const Image *img, const char *fname)
 	fclose(fp);
 
 	return true;
-}
-
-
-static int read_to_wspace(FILE *fp, char *buf, int bsize)
-{
-	int c, count = 0;
-	
-	while((c = fgetc(fp)) != -1 && !isspace(c) && count < bsize - 1) {
-		if(c == '#') {
-			while((c = fgetc(fp)) != -1 && c != '\n' && c != '\r');
-			c = fgetc(fp);
-			if(c == '\n' || c == '\r') continue;
-		}
-		*buf++ = c;
-		count++;
-	}
-	*buf = 0;
-	
-	while((c = fgetc(fp)) != -1 && isspace(c));
-	ungetc(c, fp);
-	return count;
 }

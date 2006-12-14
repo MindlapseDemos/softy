@@ -1,0 +1,4 @@
+make to build a regular static library
+
+make -f Makefile.gp2x to cross-compile for gp2x
+  (uses arm-linux-gcc, if you use a different prefix, pass or change the CC var)
