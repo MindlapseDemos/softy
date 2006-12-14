@@ -146,6 +146,12 @@
 				RelativePath="..\src\image.h">
 			</File>
 			<File
+				RelativePath="..\src\image_ppm.c">
+			</File>
+			<File
+				RelativePath="..\src\image_ppm.h">
+			</File>
+			<File
 				RelativePath="..\src\p_eclipse.h">
 			</File>
 			<File

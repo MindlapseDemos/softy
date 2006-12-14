@@ -86,17 +86,25 @@ void blend(Image *dst, int xpos, int ypos, const Image *src, float t)
 
 inline float InvSqrt(float x)
 {
+
   float xhalf = 0.5f*x;
   int i = *(int*)&x; // get bits for floating value
   i = 0x5f375a86- (i>>1); // gives initial guess y0
   x = *(float*)&i; // convert bits back to float
   x = x*(1.5f-xhalf*x*x); // Newton step, repeating increases accuracy
+
   return x;
+
 }
 
 inline Color rb(int x, int y, int cx, int cy, int w, int h, int intensity, float depth,
 				float inv_depth, Color *pixels)
 {
+	if (x == cx && y == cy)
+	{
+		return pixels[x + w * y];	
+	}
+	static int nx, ny;
 	static float px, py, ctx, cty, difx, dify, invd, len2;
 	//static Vector2 p, center, dif;
 	
@@ -115,7 +123,7 @@ inline Color rb(int x, int y, int cx, int cy, int w, int h, int intensity, float
 	// rare case
 	if (inv_depth < invd)
 	{
-		invd = sqrtf(len2);
+		invd = sqrt(len2);
 		depth = 1.0f / invd;
 	}
 	
@@ -125,8 +133,8 @@ inline Color rb(int x, int y, int cx, int cy, int w, int h, int intensity, float
 	px += difx * depth;
 	py += dify * depth;
 
-	int nx = (int)(px + 0.5f);
-	int ny = (int)(py + 0.5f);
+	nx = (int)(px + 0.5f);
+	ny = (int)(py + 0.5f);
 	
 	Color orig = pixels[x + w * y];
 	Color blend = pixels[nx + w * ny];
