@@ -29,5 +29,6 @@ void add_part_inst(std::string which, unsigned int start_msec,
 	unsigned int stop_msec, bool local_time);
 bool init_demo();
 void run_demo(unsigned int msec);
+void end_demo_at(unsigned int msec);
 
 #endif // ndef _DEMO_H_

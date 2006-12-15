@@ -11,6 +11,7 @@ Color *fb;
 extern Image *fbimg;
 unsigned int *cfb;
 
+static unsigned int demo_end;
 Color second_buffer[640*480];
 
 struct PStruct
@@ -47,10 +48,20 @@ void add_part_inst(std::string which, unsigned int start_msec,
 
 bool init_demo()
 {
+	demo_end = 0;
 	for (unsigned int i=0; i<parts.size(); i++)
 	{
 		if (!parts[i].p.init || !parts[i].p.run) return false;
 		if (!parts[i].p.init()) return false;
+		
+		// determine end of demo
+		for (unsigned int j=0; j<parts[i].stop.size(); j++)
+		{
+			if (parts[i].stop[j] > demo_end)
+			{
+				demo_end = parts[i].stop[j];
+			}
+		}
 	}
 	return true;
 }
@@ -59,6 +70,11 @@ bool init_demo()
 
 void run_demo(unsigned int msec)
 {
+	if (msec > demo_end)
+	{
+		SDL_Quit();
+		exit(0);
+	}
 	// decide what parts to render
 	std::vector<Part> rpart;
 	std::vector<unsigned int> segment_start;
@@ -93,7 +109,7 @@ void run_demo(unsigned int msec)
 	if (!rpart.size())
 	{
 		// no part here - clear to black
-		memset(fb, 0, 640 * 480 * 4);
+		memset(fb, 0xff, 640 * 480 * 4);
 	}
 	else if (rpart.size() == 1)
 	{
@@ -168,18 +184,31 @@ void run_demo(unsigned int msec)
 		fbimg->pixels = fb = (Color*) fbsurf->pixels;;
 	}
 
-	// --- call any part functions ---
-	//tunnel_render(msec / 1000.0f);
-	//if(msec >= S_ECLIPSE && msec < E_ECLIPSE) {
-	//	eclipse_run(msec);
-	//}
-	//radial_render(msec / 1000.0f);
-
+	// fade out for 1 sec before demo ends
+	if (demo_end)
+	{
+		unsigned int fade_dur = demo_end > 2000 ? 2000 : demo_end;
+		if (msec > (demo_end - fade_dur))
+		{
+			Color *dst = (Color*) fbsurf->pixels;
+			Color fade_to;
+			fade_to.packed = 0;
+			int t = ((msec - (demo_end - fade_dur)) * 255) / fade_dur;
+			for (unsigned int i=0; i<640*480; i++)
+			{
+				*dst++ = Lerp(*dst, fade_to, t);
+			}
+		}
+	}
+	
 	if(SDL_MUSTLOCK(fbsurf)) SDL_UnlockSurface(fbsurf);
 	SDL_Flip(fbsurf);
 }
 
-
+void end_demo_at(unsigned int msec)
+{
+	demo_end = msec;
+}
 
 
 

@@ -87,14 +87,18 @@ bool init()
 	add_part(Part(radial_init, radial_run), "radial");
 	add_part(Part(amiga_init_wrapper, amiga_run), "amiga");
 	//add_part(Part(eclipse_init, eclipse_run), "eclipse");
-	if (!init_demo()) return false;
 
 	// demoscript
 	//add_part_inst("eclipse", 0, 21032141, true);
-	add_part_inst("amiga", 2000, 321432, true);
-	//add_part_inst("tunnel", 0, 5000, true);
-	//add_part_inst("radial", 0, 10000, true);
-	//add_part_inst("tunnel", 7000, 15000, true);
+	add_part_inst("amiga", 2000, 5000, true);
+	add_part_inst("tunnel", 0, 2500, true);
+	add_part_inst("radial", 4500, 10000, true);
+	add_part_inst("slimy", 7000, 15000, true);
+	
+	// call this after demoscript
+	if (!init_demo()) return false;
+
+
 
 
 	//if(!tunnel_init()) return false;
@@ -133,8 +137,9 @@ void handle_event(SDL_Event *event)
 	switch(event->type) {
 	case SDL_KEYDOWN:
 		if(event->key.keysym.sym == SDLK_ESCAPE) {
-			SDL_Quit();
-			exit(0);
+			//SDL_Quit();
+			//exit(0);
+			end_demo_at(SDL_GetTicks() - start_time + 2000);
 		}
 		break;
 	case SDL_KEYUP:
