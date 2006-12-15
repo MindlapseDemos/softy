@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL.h>
+#include <mikmod.h>
 #include <gl.h>
 #include "softy.h"
 #include "demo.h"
@@ -19,8 +20,10 @@ void cleanup();
 
 SDL_Surface *fbsurf;
 Image *fbimg;
+MODULE *mod;
 
 unsigned long start_time;
+bool music = false;	/* TODO: change this to true! */
 
 int main(int argc, char **argv)
 {
@@ -37,6 +40,10 @@ int main(int argc, char **argv)
 				fullscreen = false;
 				break;
 
+			case 'm':
+				music = !music;
+				break;
+
 			default:
 				fprintf(stderr, "unrecognized argument: %s\n", argv[i]);
 				return EXIT_FAILURE;
@@ -44,7 +51,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 	if(!(fbsurf = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE | (fullscreen ? SDL_FULLSCREEN : 0)))) {
 		fprintf(stderr, "failed to init video\n");
 		return EXIT_FAILURE;
@@ -90,56 +97,91 @@ bool init()
 
 	// demoscript
 	//add_part_inst("eclipse", 0, 21032141, true);
-	add_part_inst("amiga", 2000, 5000, true);
+	
+	add_part_inst("amiga", 0, 321432, true);
+	//add_part_inst("tunnel", 0, 5000, true);
+	//add_part_inst("radial", 0, 10000, true);
+	//add_part_inst("tunnel", 7000, 15000, true);
+
+	/*add_part_inst("amiga", 2000, 5000, true);
 	add_part_inst("tunnel", 0, 2500, true);
 	add_part_inst("radial", 4500, 10000, true);
-	add_part_inst("slimy", 7000, 15000, true);
+	add_part_inst("slimy", 7000, 15000, true);*/
 	
 	// call this after demoscript
 	if (!init_demo()) return false;
 
+	if(music) {
+		MikMod_RegisterAllDrivers();
+		MikMod_RegisterAllLoaders();
 
+		md_mode |= DMODE_SOFT_MUSIC;
+		if(MikMod_Init("") != 0) {
+			fprintf(stderr, "mikmod init failed: %s\n", MikMod_strerror(MikMod_errno));
+			fprintf(stderr, "to run without music use -m\n");
+			return false;
+		}
+		atexit(MikMod_Exit);
 
-
-	//if(!tunnel_init()) return false;
-	//if(!eclipse_init()) return false;
-	//if (!radial_init()) return false;
+		if(!(mod = Player_Load("data/music.mod", 4, 0))) {
+			fprintf(stderr, "failed to load %s: %s\n", "data/music.mod", MikMod_strerror(MikMod_errno));
+			fprintf(stderr, "to run without music use -m\n");
+			return false;
+		}
+		Player_Start(mod);
+	}
 
 	start_time = SDL_GetTicks();
 
 	return true;
 }
 
+// frame interval = 1000 / fps
+#define FRAME_INTERVAL		25
+
 #define SHOW_FPS
 void redraw()
 {
+	static unsigned int prev_frame = -100;
 	unsigned int msec = SDL_GetTicks() - start_time;
+
+	if(msec - prev_frame < FRAME_INTERVAL) {
+		return;
+	}
+	prev_frame = msec;
+
 	run_demo(msec);
 
 #ifdef SHOW_FPS
-	static unsigned int prev_msec = 0;
+	static unsigned int prev_fps_msec = 0;
 	static int frames;
-	if(msec - prev_msec >= 2000) {
-		float fps = (float)frames / ((float)(msec - prev_msec) / 1000.0);
+	if(msec - prev_fps_msec >= 2000) {
+		float fps = (float)frames / ((float)(msec - prev_fps_msec) / 1000.0);
 		printf("\rfps: %.2f    ", fps);
 		fflush(stdout);
 		frames = 0;
-		prev_msec = msec;
+		prev_fps_msec = msec;
 	} else {
 		frames++;
 	}
 #endif
+
+	if(mod) MikMod_Update();
 }
 
 void handle_event(SDL_Event *event)
 {
+	static int esc_pressed;
 	static int repl = 1;
 	switch(event->type) {
 	case SDL_KEYDOWN:
 		if(event->key.keysym.sym == SDLK_ESCAPE) {
 			//SDL_Quit();
 			//exit(0);
-			end_demo_at(SDL_GetTicks() - start_time + 2000);
+			if(!esc_pressed) {
+				end_demo_at(SDL_GetTicks() - start_time + 2000);
+				esc_pressed = 1;
+			}
 		}
 		break;
 	case SDL_KEYUP:

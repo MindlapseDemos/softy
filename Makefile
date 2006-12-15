@@ -10,7 +10,7 @@ inc = -Isrc -Isrc/vmath -Isrc/libfixgl/src
 
 CFLAGS = -Wall $(dbg) $(opt) $(inc) `sdl-config --cflags`
 CXXFLAGS = -Wall $(dbg) $(opt) $(inc) `sdl-config --cflags`
-LDFLAGS = `sdl-config --libs`
+LDFLAGS = `sdl-config --libs` -lmikmod
 
 $(bin): $(obj)
 	$(CXX) -o $@ $(obj) $(LDFLAGS)
