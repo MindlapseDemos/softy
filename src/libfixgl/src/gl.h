@@ -209,6 +209,7 @@ void glScalef(GLfloat x, GLfloat y, GLfloat z);
 void glScalex(GLfixed x, GLfixed y, GLfixed z);
 
 void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat znear, GLfloat zfar);
+void gluLookAt(GLfloat x, GLfloat y, GLfloat z, GLfloat tx, GLfloat ty, GLfloat tz, GLfloat ux, GLfloat uy, GLfloat uz);
 
 /* rendering */
 void glBegin(GLenum primitive);

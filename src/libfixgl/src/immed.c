@@ -51,7 +51,7 @@ void glBegin(GLenum primitive) {
 	if(!state.mvp_valid) {
 		int mvtop = state.stack_top[MODE_MODELVIEW] - 1;
 		int ptop = state.stack_top[MODE_PROJECTION] - 1;
-		vm_mult_matrix(state.mvp_mat, state.mstack[MODE_PROJECTION][mvtop], state.mstack[MODE_MODELVIEW][ptop]);
+		vm_mult_matrix(state.mvp_mat, state.mstack[MODE_PROJECTION][ptop], state.mstack[MODE_MODELVIEW][mvtop]);
 		state.mvp_valid = 1;
 	}
 

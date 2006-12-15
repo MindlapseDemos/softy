@@ -698,6 +698,7 @@ void glPushMatrix(void) {
 
 	memcpy(state.mstack[mmode][top + 1], state.mstack[mmode][top], 16 * sizeof(fixed));
 	state.stack_top[mmode]++;
+	state.mvp_valid = 0;
 }
 
 void glPopMatrix(void) {
@@ -711,6 +712,7 @@ void glPopMatrix(void) {
 	CHECK_BEG_END();
 
 	state.stack_top[mmode]--;
+	state.mvp_valid = 0;
 }
 
 void glTranslatef(GLfloat x, GLfloat y, GLfloat z) {
@@ -824,6 +826,43 @@ void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat znear, GLfloat zfar) {
 	m[M(3, 3)] = 0.0f;
 	
 	glMultMatrixf(m);
+}
+
+#define CROSS(rx, ry, rz, x1, y1, z1, x2, y2, z2) \
+	do { \
+		(rx) = (y1) * (z2) - (z1) * (y2); \
+		(ry) = (z1) * (x2) - (x1) * (z2); \
+		(rz) = (x1) * (y2) - (y1) * (x2); \
+	} while(0)
+
+void gluLookAt(GLfloat x, GLfloat y, GLfloat z, GLfloat tx, GLfloat ty, GLfloat tz, GLfloat ux, GLfloat uy, GLfloat uz)
+{
+	float m[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+	float len, vx, vy, vz, rx, ry, rz;
+
+	vx = tx - x;
+	vy = ty - y;
+	vz = tz - z;
+
+	len = sqrt(vx * vx + vy * vy + vz * vz);
+	vx /= len; vy /= len; vz /= len;
+
+	len = sqrt(ux * ux + uy * uy + uz * uz);
+	ux /= len; uy /= len; uz /= len;
+
+	CROSS(rx, ry, rz, vx, vy, vz, ux, uy, uz);
+	CROSS(ux, uy, uz, rx, ry, rz, vx, vy, vz);
+
+	m[0] = rx; m[1] = ry; m[2] = rz;
+	m[4] = ux; m[5] = uy; m[6] = uz;
+	m[8] = -vx; m[9] = -vy; m[10] = -vz;;
+
+	/*m[0] = rx; m[4] = ry; m[8] = rz;
+	m[1] = ux; m[5] = uy; m[9] = uz;
+	m[2] = -vx; m[6] = -vy; m[10] = -vz;*/
+
+	glMultMatrixf(m);
+	glTranslatef(-x, -y, -z);
 }
 
 
