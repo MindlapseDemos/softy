@@ -698,7 +698,6 @@ void glPushMatrix(void) {
 
 	memcpy(state.mstack[mmode][top + 1], state.mstack[mmode][top], 16 * sizeof(fixed));
 	state.stack_top[mmode]++;
-	state.mvp_valid = 0;
 }
 
 void glPopMatrix(void) {

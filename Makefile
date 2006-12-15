@@ -4,7 +4,7 @@ obj = $(csrc:.c=.o) $(ccsrc:.cc=.o) src/libfixgl/libGL.a
 bin = softy
 
 dbg = -g
-#opt = -O3 -fno-strict-aliasing -ffast-math
+opt = -O3 -fno-strict-aliasing -ffast-math
 
 inc = -Isrc -Isrc/vmath -Isrc/libfixgl/src
 

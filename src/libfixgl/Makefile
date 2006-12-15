@@ -2,7 +2,7 @@ obj :=
 lib := libGL.a
 
 dbg := -g
-#opt := -O3 -ffast-math
+opt := -O3 -ffast-math
 
 CC := gcc
 CFLAGS := -Wall $(dbg) $(opt) -DHAVE_INLINE

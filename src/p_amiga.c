@@ -10,10 +10,18 @@ static int xres = 640;
 static int yres = 480;
 static int vp_x, vp_y;
 
-static void gsphere_triangle(vec3_t a, vec3_t b, vec3_t c, int iter);
-void gsphere(float sz, int iter, int hemisphere);
+void draw_amiga(unsigned int msec, int mirror);
+void draw_plane(void);
+void sphere(float rad, int vpoints, float umax, float vmax);
 
 static unsigned int amiga_tex;
+
+static float white[] = {1, 1, 1, 1};
+static float black[] = {0, 0, 0, 0};
+static float amb[] = {0.03, 0.03, 0.03, 0};
+static float sph_diffuse[] = {0.8, 0.8, 0.8, 1};
+static float mirror_color[] = {0.2, 0.4, 0.7, 1};
+static float sph_mir_col[4];
 
 extern unsigned int *cfb;
 
@@ -34,162 +42,201 @@ int amiga_init(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, tex_x, tex_y, 0, GL_BGRA, GL_UNSIGNED_BYTE, img);
 	free_ppm(img);
 
+	sph_mir_col[0] = mirror_color[0] * sph_diffuse[0];
+	sph_mir_col[1] = mirror_color[1] * sph_diffuse[1];
+	sph_mir_col[2] = mirror_color[2] * sph_diffuse[2];
+	sph_mir_col[3] = mirror_color[3] * sph_diffuse[3];
+
 	return 0;
 }
 
 void amiga_run(unsigned int msec)
 {
-	float lpos[] = {-100, 100, 100, 1.0};
-	float amb[] = {0, 0, 0, 0};
+	float lpos[][4] = {
+		{-100, 100, 100, 1},
+		{0, 0, 0, 1}
+	};
 
-	float white[] = {1, 1, 1, 0};
-
-	glEnable(GL_PHONG);
-	glDisable(GL_DEPTH_TEST);
+	/*glEnable(GL_PHONG);*/
+	glEnable(GL_DEPTH_TEST);
 	
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-	glLightfv(GL_LIGHT0, GL_POSITION, lpos);
+	/*glEnable(GL_LIGHT1);*/
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
+
+	glClearColor(amb[0], amb[1], amb[2], 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glTranslatef(0, -1, -4);
-	glRotatef((float)msec / 10.0, 0, 1, 0);
+	gluLookAt(0, 3.5, 6, 0, 1, 0, 0, 1, 0);
 
-	glClearColor(0.1, 0.1, 0.1, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, white);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 60.0);
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, amiga_tex);
-	gsphere(1.0, 3, 0);
-	glDisable(GL_TEXTURE_2D);
+	/*glLightfv(GL_LIGHT0, GL_POSITION, lpos[0]);*/
 
 
-	glBegin(GL_QUADS);
-	glNormal3f(0, 1, 0);
-	glVertex3f(-10, 0, -10);
-	glVertex3f(-10, 0, 1);
-	glVertex3f(10, 0, 1);
-	glVertex3f(10, 0, -10);
-	glEnd();
+	/* ---- draw floor ---- */
+	glPushMatrix();
+	glTranslatef(cos(msec / 1000.0) * 4.0, 2 + sin(msec / 500.0), sin(msec / 1000.0) * 4.0);
+	glLightfv(GL_LIGHT0, GL_POSITION, lpos[1]);
+	glPopMatrix();
+	glEnable(GL_PHONG);
 
-	/*glDisable(GL_LIGHTING);
-	glBegin(GL_QUADS);
-	glColor3f(1, 0, 0);
-	glVertex3f(-10, -1, 0);
-	glVertex3f(-10, 1, 0);
-	glVertex3f(10, 1, 0);
-	glVertex3f(10, -1, 0);
+	draw_plane();
 
-	glColor3f(0, 1, 0);
-	glVertex3f(10, -1, 0);
-	glVertex3f(10, 1, 0);
-	glVertex3f(-10, 1, 0);
-	glVertex3f(-10, -1, 0);
-	glEnd();*/
-	glEnable(GL_LIGHTING);
+	/* ---- draw reflected sphere ---- */
+	glDisable(GL_PHONG);
+	glEnable(GL_SMOOTH);
+	
+	glPushMatrix();
+	glTranslatef(cos(msec / 1000.0) * 4.0, -(2 + sin(msec / 500.0)), sin(msec / 1000.0) * 4.0);
+	glLightfv(GL_LIGHT0, GL_POSITION, lpos[1]);
+	glPopMatrix();
 
+	glDisable(GL_DEPTH_TEST);
+	draw_amiga(msec, 1);
+	glEnable(GL_DEPTH_TEST);
+
+	/* ---- draw regular sphere ---- */
+	glPushMatrix();
+	glTranslatef(cos(msec / 1000.0) * 4.0, 2 + sin(msec / 500.0), sin(msec / 1000.0) * 4.0);
+	glLightfv(GL_LIGHT0, GL_POSITION, lpos[1]);
+	glPopMatrix();
+
+	glEnable(GL_PHONG);
+	draw_amiga(msec, 0);
+	glDisable(GL_PHONG);
+	glEnable(GL_SMOOTH);
+
+
+	/*glDisable(GL_LIGHT1);*/
 
 	memcpy(cfb + ((yres - vp_y) / 2) * xres, fglGetFrameBuffer(), vp_x * vp_y * 4);
 }
 
-#define PT0		{0, 1, 0}
-#define PT1		{0, -1, 0}
-#define PT2		{0.707, 0, 0.707}
-#define PT3		{-0.707, 0, 0.707}
-#define PT4		{-0.707, 0, -0.707}
-#define PT5		{0.707, 0, -0.707}
-
-static vec3_t sphv[] = {
-	PT0, PT5, PT2,
-	PT0, PT2, PT3,
-	PT0, PT3, PT4,
-	PT0, PT4, PT5,
-	PT1, PT2, PT5,
-	PT1, PT3, PT2,
-	PT1, PT4, PT3,
-	PT1, PT5, PT4,
-};
-
-
-void gsphere(float sz, int iter, int hemisphere)
+static float squish(float x)
 {
-	int i, vcount = hemisphere ? 4 : 8;
-
-	/*glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glScalef(sz, sz, sz);*/
-
-	/*glEnable(GL_NORMALIZE);*/
-
-	glBegin(GL_TRIANGLES);
-	glColor3f(0, 1, 0);
-
-	for(i=0; i<vcount; i++) {
-		gsphere_triangle(sphv[i * 3], sphv[i * 3 + 1], sphv[i * 3 + 2], iter);
+	x = fmod(x, PI);
+	float falloff;
+	if(x > HALF_PI) {
+		falloff = (x > PI * 0.9375 ? -(x - PI * 0.9375) * 2.0 : 0);
+	} else {
+		falloff = cos(2.0 * x) * 0.5 + 0.5;
 	}
-
-	glEnd();
-
-	/*glDisable(GL_NORMALIZE);*/
-
-	/*glPopMatrix();*/
+	return 1.0 - sin(3.0 * PI * x) * falloff * 0.25;
 }
 
-static void gsphere_vertex(float x, float y, float z)
+void draw_amiga(unsigned int msec, int mirror)
 {
-	float u, v;
+	float sec = (float)msec / 1000.0;
+	float x, y, z, sy;
+
+	x = cos(sec * 0.4) * 2.0;
+	y = 0.7 + fabs(sin(sec * 2.0)) * 1.6;
+	z = sin(sec * 0.8);
+	sy = squish(sec * 2.0);
+
+	if(mirror) {
+		y = -y;
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, sph_mir_col);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, black);
+	} else {
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, sph_diffuse);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, white);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50.0);
+	}
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+
+	glTranslatef(x, y, z);
+	/*glRotatef((float)msec / 10.0, 1, 0, 0);
+	glRotatef((float)msec / 10.0, 0, 1, 0);*/
+	glScalef(1, sy, 1);
+	glRotatef((float)msec / 14.0, 0, 1, 0);
+	glRotatef((float)msec / 15.0, 0, 0, 1);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, amiga_tex);
+	sphere(1.0, 10, 1.0, 1.0);
+	glDisable(GL_TEXTURE_2D);
+
+	glPopMatrix();
+}
+
+void draw_plane(void)
+{
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, mirror_color);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, white);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 30.0);
+
+	glBegin(GL_QUADS);
+	glNormal3f(0, 1, 0);
+	glVertex3f(5, 0, -3);
+	glVertex3f(5, 0, 2.7);
+	glVertex3f(-5, 0, 2.7);
+	glVertex3f(-5, 0, -3);
+	glEnd();
+}
+
+
+static void sphere_vertex(float x, float y, float z, float rad, float u, float v, float vmax)
+{
+	float nx, ny, nz;
 	
-	u = atan2(z, x) / TWO_PI;
-	v = acos(y) / PI;	/* y / r, consider r == 1 */
+	/* tex coords */
 	glTexCoord2f(u, v);
-	
-	glNormal3f(x, y, z);
+
+	/* normal */
+	nx = x / rad;
+	ny = y / rad;
+	nz = z / rad;
+	glNormal3f(nx, ny, nz);
+
 	glVertex3f(x, y, z);
 }
 
-static void gsphere_triangle(vec3_t a, vec3_t b, vec3_t c, int iter)
+
+#define SPH_X(rho, theta, phi)	((rho) * cos(theta) * sin(phi))
+#define SPH_Y(rho, theta, phi)	((rho) * cos(phi))
+#define SPH_Z(rho, theta, phi)	((rho) * sin(theta) * sin(phi))
+
+void sphere(float rad, int vpoints, float umax, float vmax)
 {
-	if(iter-- > 0) {
-		vec3_t d, e, f;
-		float dlen, elen, flen;
+	float u0, u1, v0, v1;
+	float du, dv;
+	int i, j, upoints = vpoints * 2;
 
-		d.x = a.x + c.x;
-		d.y = a.y + c.y;
-		d.z = a.z + c.z;
-		dlen = sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
-		d.x /= dlen;
-		d.y /= dlen;
-		d.z /= dlen;
+	du = umax / upoints;
+	dv = vmax / vpoints;
 
-		e.x = a.x + b.x;
-		e.y = a.y + b.y;
-		e.z = a.z + b.z;
-		elen = sqrt(e.x * e.x + e.y * e.y + e.z * e.z);
-		e.x /= elen;
-		e.y /= elen;
-		e.z /= elen;
+	v0 = 0.0;
+	v1 = dv;
 
-		f.x = b.x + c.x;
-		f.y = b.y + c.y;
-		f.z = b.z + c.z;
-		flen = sqrt(f.x * f.x + f.y * f.y + f.z * f.z);
-		f.x /= flen;
-		f.y /= flen;
-		f.z /= flen;
+	glBegin(GL_QUADS);
+	glColor3f(1, 1, 1);
+	for(i=0; i<vpoints; i++) {
+		float phi0 = v0 * PI;
+		float phi1 = v1 * PI;
+	
+		u0 = 0.0;
+		u1 = du;
 
-		gsphere_triangle(a, e, d, iter);
-		gsphere_triangle(d, f, c, iter);
-		gsphere_triangle(e, b, f, iter);
-		gsphere_triangle(e, f, d, iter);
-	} else {
-		gsphere_vertex(a.x, a.y, a.z);
-		gsphere_vertex(b.x, b.y, b.z);
-		gsphere_vertex(c.x, c.y, c.z);
+		for(j=0; j<upoints; j++) {
+			float theta0 = u0 * TWO_PI;
+			float theta1 = u1 * TWO_PI;
+
+			sphere_vertex(SPH_X(rad, theta0, phi1), SPH_Y(rad, theta0, phi1), SPH_Z(rad, theta0, phi1), rad, u0, v1, vmax);
+			sphere_vertex(SPH_X(rad, theta1, phi1), SPH_Y(rad, theta1, phi1), SPH_Z(rad, theta1, phi1), rad, u1, v1, vmax);
+			sphere_vertex(SPH_X(rad, theta1, phi0), SPH_Y(rad, theta1, phi0), SPH_Z(rad, theta1, phi0), rad, u1, v0, vmax);
+			sphere_vertex(SPH_X(rad, theta0, phi0), SPH_Y(rad, theta0, phi0), SPH_Z(rad, theta0, phi0), rad, u0, v0, vmax);
+
+			u0 += du;
+			u1 += du;
+		}
+		v0 += dv;
+		v1 += dv;
 	}
+	glEnd();
 }
-

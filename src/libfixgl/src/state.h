@@ -46,8 +46,9 @@ enum {MODE_MODELVIEW, MODE_PROJECTION, MODE_TEXTURE};
 	}
 
 struct state {
-	/* transformation state */
 	unsigned int s;
+
+	/* transformation state */
 	int matrix_mode;
 	fixed mstack[MODE_COUNT][MATRIX_STACK_SIZE][16];
 	int stack_top[MODE_COUNT];

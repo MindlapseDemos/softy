@@ -20,18 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GL_TYPES_H_
 #define GL_TYPES_H_
 
-#ifdef _MSC_VER
-typedef char int8_t;
-typedef unsigned char uint8_t;
-typedef short int16_t;
-typedef unsigned short uint16_t;
-typedef long int32_t;
-typedef unsigned long uint32_t;
-typedef __int64 int64_t;
-typedef unsigned __int64 uint64_t;
-#else
 #include <stdint.h>
-#endif
 
 /* OpenGL types */
 typedef uint8_t 	GLboolean;

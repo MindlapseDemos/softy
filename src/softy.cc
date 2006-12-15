@@ -106,10 +106,25 @@ bool init()
 	return true;
 }
 
+#define SHOW_FPS
 void redraw()
 {
 	unsigned int msec = SDL_GetTicks() - start_time;
 	run_demo(msec);
+
+#ifdef SHOW_FPS
+	static unsigned int prev_msec = 0;
+	static int frames;
+	if(msec - prev_msec >= 2000) {
+		float fps = (float)frames / ((float)(msec - prev_msec) / 1000.0);
+		printf("\rfps: %.2f    ", fps);
+		fflush(stdout);
+		frames = 0;
+		prev_msec = msec;
+	} else {
+		frames++;
+	}
+#endif
 }
 
 void handle_event(SDL_Event *event)

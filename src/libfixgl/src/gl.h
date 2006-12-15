@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "types.h"
 #include "fixed_point.h"
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(HAVE_INLINE)
 #define inline
 #endif
 
@@ -52,7 +52,7 @@ enum {
 	/* -- end of bit fields (acually bit offsets) -- */
 	_STATE_BITS_COUNT,
 
-	GL_PROXY_TEXTURE_1D,
+	GL_PROXY_TEXTURE_1D = 33,
 	GL_PROXY_TEXTURE_2D,
 	GL_PROXY_TEXTURE_3D,
 	GL_PROXY_TEXTURE_CUBE,
