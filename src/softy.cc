@@ -5,6 +5,7 @@
 #include <gl.h>
 #include "softy.h"
 #include "demo.h"
+#include "demoscript.h"
 
 // parts
 #include "p_tunnel.h"
@@ -97,17 +98,16 @@ bool init()
 
 	// demoscript
 	//add_part_inst("eclipse", 0, 21032141, true);
-	
-	add_part_inst("amiga", 0, 321432, true);
-	//add_part_inst("tunnel", 0, 5000, true);
-	//add_part_inst("radial", 0, 10000, true);
-	//add_part_inst("tunnel", 7000, 15000, true);
+	//add_part_inst("amiga", 2000, 5000, true);
+	//add_part_inst("tunnel", 0, 2500, true);
+	//add_part_inst("radial", 4500, 10000, true);
+	//add_part_inst("slimy", 7000, 15000, true);
+	if (!process_demo_script("demoscript"))
+	{
+		printf("ERROR: bad demoscript\n");
+		return false;
+	}
 
-	/*add_part_inst("amiga", 2000, 5000, true);
-	add_part_inst("tunnel", 0, 2500, true);
-	add_part_inst("radial", 4500, 10000, true);
-	add_part_inst("slimy", 7000, 15000, true);*/
-	
 	// call this after demoscript
 	if (!init_demo()) return false;
 

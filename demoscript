@@ -1,0 +1,6 @@
+# mlfc demoscript
+# ---------------
+
+
+inst tunnel 0s 10s local
+inst radial 8s 20s local
