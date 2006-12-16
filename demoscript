@@ -6,3 +6,6 @@ inst tunnel 	0s 	10s local
 inst radial 	8s 	20s local
 inst amiga	18s	30s local
 inst slimy	28s	40s local
+inst eclipse	38s	50s local
+
+param tunnel	5s	3

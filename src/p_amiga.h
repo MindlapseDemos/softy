@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 int amiga_init(void);
-void amiga_run(unsigned int msec);
+void amiga_run(unsigned int msec, int param);
 
 #ifdef __cplusplus
 }

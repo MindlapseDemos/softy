@@ -100,6 +100,7 @@ bool init()
 	//add_part(Part(eclipse_init, eclipse_run), "eclipse");
 
 	// demoscript
+	//set_part_param("tunnel", 5000, 2);
 	//add_part_inst("eclipse", 0, 21032141, true);
 	//add_part_inst("amiga", 2000, 5000, true);
 	//add_part_inst("tunnel", 0, 2500, true);

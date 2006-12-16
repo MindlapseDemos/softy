@@ -51,7 +51,11 @@ vector<string> read_line(FILE *fp)
 	{
 		char c = getc(fp);
 		int type = classify_char(c);
-		if (type == 0) break;
+		if (type == 0) 
+		{
+			if (token.size()) ret.push_back(token);
+			break;
+		}
 		if (type == 1)
 		{
 			if (token.size())
@@ -115,6 +119,20 @@ bool process_inst_cmd(vector<string> cmd)
 	return true;
 }
 
+bool process_param_cmd(vector<string> cmd)
+{
+	if (cmd.size() != 4)
+	{
+		printf("ERROR: param command does not take %d arguments\n", cmd.size() - 1);
+		return false;
+	}
+
+	string name = cmd[1];
+	unsigned int msec = read_time(cmd[2]);
+	int param = atoi(cmd[3].c_str());
+	set_part_param(name, msec, param);
+}
+
 bool process_cmd(vector<string> cmd)
 {
 	if (!cmd.size()) return true;
@@ -122,6 +140,10 @@ bool process_cmd(vector<string> cmd)
 	if (cmd[0] == "inst")
 	{
 		return process_inst_cmd(cmd);
+	}
+	if (cmd[0] == "param")
+	{
+		return process_param_cmd(cmd);
 	}
 	
 	printf("WARNING: ignoring unknown command %s\n", cmd[0]);

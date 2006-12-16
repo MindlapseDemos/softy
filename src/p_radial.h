@@ -5,6 +5,6 @@
 
 bool radial_init();
 void radial_render(float secs);
-void radial_run(unsigned int msec);
+void radial_run(unsigned int msec, int param);
 
 #endif // ndef _P_RADIAL_H_

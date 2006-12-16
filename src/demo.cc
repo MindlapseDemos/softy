@@ -21,6 +21,8 @@ struct PStruct
 	std::vector<unsigned int> start;
 	std::vector<unsigned int> stop;
 	std::vector<bool> local;
+	std::vector<unsigned int> param_time;
+	std::vector<int> param;
 	PStruct()
 	{
 		
@@ -67,7 +69,28 @@ bool init_demo()
 	return true;
 }
 
-#include "p_radial.h"
+int get_part_param(unsigned int p, unsigned int msec)
+{
+	if (!parts[p].param_time.size()) return 0;
+	unsigned int max_time = 0;
+	unsigned int max_idx = 0;
+	bool def = true;
+	for (unsigned int i=0; i<parts[p].param_time.size(); i++)
+	{
+		if (parts[p].param_time[i] <= msec)
+		{
+			if (parts[p].param_time[i] >= max_time)
+			{
+				def = false;
+				max_time = parts[p].param_time[i];
+				max_idx = i;
+			}
+		}
+	}
+	if (def)
+		return 0;
+	return parts[p].param[max_idx];
+}
 
 void run_demo(unsigned int msec)
 {
@@ -81,7 +104,8 @@ void run_demo(unsigned int msec)
 	std::vector<unsigned int> segment_start;
 	std::vector<unsigned int> segment_stop;
 	std::vector<bool> slocal;
-
+	std::vector<int> param;
+	
 	for (unsigned int i=0; i<parts.size(); i++)
 	{
 		// determine which segment is inside this time
@@ -99,6 +123,7 @@ void run_demo(unsigned int msec)
 				segment_start.push_back(start);
 				segment_stop.push_back(stop);
 				slocal.push_back(parts[i].local[j]);
+				param.push_back(get_part_param(i, msec));
 			}
 		}
 	}
@@ -115,9 +140,9 @@ void run_demo(unsigned int msec)
 	else if (rpart.size() == 1)
 	{
 		if (slocal[0])
-			rpart[0].run(msec - segment_start[0]);
+			rpart[0].run(msec - segment_start[0], param[0]);
 		else
-			rpart[0].run(msec);
+			rpart[0].run(msec, param[0]);
 	}
 	else
 	{
@@ -163,16 +188,16 @@ void run_demo(unsigned int msec)
 
 		// render first part
 		if (slocal[first])
-			rpart[first].run(msec - segment_start[first]);
+			rpart[first].run(msec - segment_start[first], param[first]);
 		else
-			rpart[first].run(msec);
+			rpart[first].run(msec, param[first]);
 
 		// render second part to second buffer
 		cfb = (unsigned int*)(fbimg->pixels = fb = second_buffer);
 		if (slocal[second])
-			rpart[second].run(msec - segment_start[second]);
+			rpart[second].run(msec - segment_start[second], param[second]);
 		else
-			rpart[second].run(msec);
+			rpart[second].run(msec, param[second]);
 
 		// blend parts
 		Color *dst = (Color*)fbsurf->pixels;
@@ -213,4 +238,8 @@ void end_demo_at(unsigned int msec)
 }
 
 
-
+void set_part_param(std::string which, unsigned int msec, int param)
+{
+	parts[part_names[which]].param_time.push_back(msec);
+	parts[part_names[which]].param.push_back(param);
+}

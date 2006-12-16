@@ -25,7 +25,7 @@ void radial_render(float secs)
 		 0.8f, 15.0f + 14 * sin(secs * 8));
 }
 
-void radial_run(unsigned int msec)
+void radial_run(unsigned int msec, int param)
 {
 	radial_render(msec / 1000.0f);
 }

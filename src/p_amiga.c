@@ -50,7 +50,7 @@ int amiga_init(void)
 	return 0;
 }
 
-void amiga_run(unsigned int msec)
+void amiga_run(unsigned int msec, int param)
 {
 	float lpos[][4] = {
 		{-100, 100, 100, 1},

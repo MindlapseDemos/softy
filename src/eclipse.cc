@@ -77,7 +77,7 @@ static float pingpong(float x)
 	return (((int)x % 2 == 0) ? (x - floor(x)) : 1.0f - (x - floor(x)));
 }
 
-void eclipse_run(unsigned int msec)
+void eclipse_run(unsigned int msec, int param)
 {
 	memset(fb, 0, fbimg->x * fbimg->y * 4);
 

@@ -6,7 +6,7 @@
 #include <string>
 
 typedef bool (*part_init_func)();
-typedef void (*part_run_func)(unsigned int msec);
+typedef void (*part_run_func)(unsigned int msec, int param);
 
 struct Part
 {
@@ -30,5 +30,7 @@ void add_part_inst(std::string which, unsigned int start_msec,
 bool init_demo();
 void run_demo(unsigned int msec);
 void end_demo_at(unsigned int msec);
+
+void set_part_param(std::string which, unsigned int msec, int param);
 
 #endif // ndef _DEMO_H_

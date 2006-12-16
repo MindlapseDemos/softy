@@ -130,7 +130,7 @@ void slimy_free(void)
 
 #define SZ		4.5
 #define HSZ		(SZ / 2.0)
-void slimy_run(unsigned int msec)
+void slimy_run(unsigned int msec, int param)
 {
 	int xoffs = (xres - slime_vp_x) / 2;
 	float t = (float)msec / 9.0;

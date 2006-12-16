@@ -50,8 +50,9 @@ void tunnel_render(float secs)
 	Tunnel(screen);
 }
 
-void tunnel_run(unsigned int msec)
+void tunnel_run(unsigned int msec, int param)
 {
+	TunnelReplica(param);
 	tunnel_render(msec / 1000.0f);
 }
 
