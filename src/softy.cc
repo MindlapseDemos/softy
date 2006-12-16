@@ -24,6 +24,7 @@ int music_func(void *data);
 SDL_Surface *fbsurf;
 Image *fbimg;
 MODULE *mod;
+unsigned int music_volume = 128;
 
 unsigned long start_time;
 bool music = true;	/* TODO: change this to true! */
@@ -212,6 +213,11 @@ int music_func(void *data)
 {
 	while (true)
 	{
-		if(mod) MikMod_Update();
+		if(mod) 
+		{
+			Player_SetVolume(music_volume);
+			MikMod_Update();
+		}
+		SDL_Delay(5);
 	}
 }
