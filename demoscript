@@ -8,8 +8,12 @@ inst amiga	18s	30s local
 inst slimy	28s	40s local
 inst eclipse	38s	50s local
 
-# flashback 1
+# flashbacks
 tframe 49.5s
+include flashback.demoscript
+tframe 54.5s
+include flashback.demoscript
+tframe 59.5s
 include flashback.demoscript
 
 # part params
