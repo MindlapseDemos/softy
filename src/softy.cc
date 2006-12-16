@@ -97,9 +97,12 @@ bool init()
 	add_part(Part(tunnel_init, tunnel_run), "tunnel");
 	add_part(Part(radial_init, radial_run), "radial");
 	add_part(Part(amiga_init_wrapper, amiga_run), "amiga");
-	//add_part(Part(eclipse_init, eclipse_run), "eclipse");
+	add_part(Part(eclipse_init, eclipse_run), "eclipse");
 
 	// demoscript
+	//Color flash;
+	//flash.packed = 0xffffff;
+	//add_flash(2000, 2000, flash);
 	//set_part_param("tunnel", 5000, 2);
 	//add_part_inst("eclipse", 0, 21032141, true);
 	//add_part_inst("amiga", 2000, 5000, true);

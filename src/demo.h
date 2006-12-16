@@ -4,6 +4,7 @@
 #define _DEMO_H_
 
 #include <string>
+#include "color.h"
 
 typedef bool (*part_init_func)();
 typedef void (*part_run_func)(unsigned int msec, int param);
@@ -32,5 +33,6 @@ void run_demo(unsigned int msec);
 void end_demo_at(unsigned int msec);
 
 void set_part_param(std::string which, unsigned int msec, int param);
+void add_flash(unsigned int msec, unsigned int dur, Color c);
 
 #endif // ndef _DEMO_H_

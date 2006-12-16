@@ -89,6 +89,18 @@ unsigned int read_time(string t)
 	return (unsigned int) atoi(t.c_str());
 }
 
+Color read_color(string c)
+{
+	float r, g, b;
+	sscanf(c.c_str(), "r%fg%fb%f", &r, &g, &b);
+	Color ret;
+	ret.c.r = (unsigned char) (255 * r);
+	ret.c.g = (unsigned char) (255 * g);
+	ret.c.b = (unsigned char) (255 * b);
+	
+	return ret;
+}
+
 bool process_inst_cmd(vector<string> cmd)
 {
 	if (cmd.size() < 4) 
@@ -133,6 +145,22 @@ bool process_param_cmd(vector<string> cmd)
 	set_part_param(name, msec, param);
 }
 
+bool process_flash_cmd(vector<string> cmd)
+{
+	if (cmd.size() != 4)
+	{
+		printf("ERROR: flash command does not take %d arguments\n", cmd.size() - 1);
+	}
+
+	Color c = read_color(cmd[1]);
+	unsigned int msec = read_time(cmd[2]);
+	unsigned int dur = read_time(cmd[3]);
+	
+	add_flash(msec, dur, c);
+	
+	return true;
+}
+
 bool process_cmd(vector<string> cmd)
 {
 	if (!cmd.size()) return true;
@@ -144,6 +172,10 @@ bool process_cmd(vector<string> cmd)
 	if (cmd[0] == "param")
 	{
 		return process_param_cmd(cmd);
+	}
+	if (cmd[0] == "flash")
+	{
+		return process_flash_cmd(cmd);
 	}
 	
 	printf("WARNING: ignoring unknown command %s\n", cmd[0]);

@@ -32,6 +32,11 @@ struct PStruct
 static std::map<std::string, unsigned int> part_names;
 static std::vector<PStruct> parts;
 
+// effects
+static std::vector<unsigned int> flash_time;
+static std::vector<unsigned int> flash_dur;
+static std::vector<Color> flash_color;
+
 void add_part(const Part &p, std::string name)
 {
 	part_names[name] = parts.size();
@@ -210,6 +215,24 @@ void run_demo(unsigned int msec)
 		fbimg->pixels = fb = (Color*) fbsurf->pixels;;
 	}
 
+	// add effects
+	// flashes
+	for (unsigned int f=0; f<flash_time.size(); f++)
+	{
+		if ((msec <  flash_time[f] + flash_dur[f] / 2) &&
+			(msec >=  flash_time[f] - flash_dur[f] / 2))
+		{
+			Color *dst = (Color*) fbsurf->pixels;
+			int flash_t = msec - (flash_time[f] - flash_dur[f] / 2);
+			float t = sin((float)flash_t * 3.14159265 / (float) flash_dur[f]);
+			int it = (int) (255 * t);
+			for (unsigned int i=0; i<640*480; i++)
+			{
+				*dst++ = Lerp(*dst, flash_color[f], it);
+			}
+		}
+	}
+
 	// fade out for 1 sec before demo ends
 	if (demo_end)
 	{
@@ -242,4 +265,11 @@ void set_part_param(std::string which, unsigned int msec, int param)
 {
 	parts[part_names[which]].param_time.push_back(msec);
 	parts[part_names[which]].param.push_back(param);
+}
+
+void add_flash(unsigned int msec, unsigned int dur, Color c)
+{
+	flash_time.push_back(msec);
+	flash_dur.push_back(dur);
+	flash_color.push_back(c);
 }
