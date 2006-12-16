@@ -8,12 +8,24 @@ inst amiga	18s	30s local
 inst slimy	28s	40s local
 inst eclipse	38s	50s local
 
+# flashback 1
+tframe 49.5s
+include flashback.demoscript
+
 # part params
-param tunnel	5s	3
+tframe 0
+param tunnel	0s	1
+param tunnel	5s	2
+param tunnel	6s	3
+param tunnel	7s	4
+param tunnel	5s	5
+param tunnel 	40s	1
 
 # effects
 flash r1g0b0	1s	500
 flash r1g0.5b0	2s	500
 flash r1g0.5b0	3s	500
 flash r1g0b0.5	4s	500
+
+
 

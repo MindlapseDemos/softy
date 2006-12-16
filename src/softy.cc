@@ -61,7 +61,8 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	SDL_WM_SetCaption("MLFC demo", 0);
-
+	SDL_ShowCursor(false);
+	
 	if(!init()) {
 		SDL_Quit();
 		return EXIT_FAILURE;
@@ -190,16 +191,6 @@ void handle_event(SDL_Event *event)
 				end_demo_at(SDL_GetTicks() - start_time + 2000);
 				esc_pressed = 1;
 			}
-		}
-		break;
-	case SDL_KEYUP:
-		if(event->key.keysym.sym == SDLK_UP) {
-			repl ++;
-			TunnelReplica(repl);
-		}
-		if(event->key.keysym.sym == SDLK_DOWN) {
-			if (repl > 1) repl --;
-			TunnelReplica(repl);
 		}
 		break;
 

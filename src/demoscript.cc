@@ -4,6 +4,8 @@
 #include <vector>
 #include "demo.h"
 
+static unsigned int time_frame = 0;
+
 using namespace std;
 
 vector<string> read_line(FILE *fp);
@@ -77,16 +79,23 @@ vector<string> read_line(FILE *fp)
 	return ret;
 }
 
-unsigned int read_time(string t)
+unsigned int read_time(string t, bool frame = false)
 {
 	// check for suffix s (seconds)
+	unsigned int ret;
 	if (t[t.size() - 1] == 's')
 	{
 		float time;
 		sscanf(t.c_str(), "%fs", &time);
-		return (unsigned int) ((time * 1000.0f) + 0.5f);
+		ret = (unsigned int) ((time * 1000.0f) + 0.5f);
 	}
-	return (unsigned int) atoi(t.c_str());
+	else
+	{
+		ret = (unsigned int) atoi(t.c_str());
+	}
+
+	if (frame) ret += time_frame;
+	return ret;
 }
 
 Color read_color(string c)
@@ -127,7 +136,7 @@ bool process_inst_cmd(vector<string> cmd)
 
 	}
 
-	add_part_inst(cmd[1], read_time(cmd[2]), read_time(cmd[3]), local);
+	add_part_inst(cmd[1], read_time(cmd[2], true), read_time(cmd[3], true), local);
 	return true;
 }
 
@@ -140,7 +149,7 @@ bool process_param_cmd(vector<string> cmd)
 	}
 
 	string name = cmd[1];
-	unsigned int msec = read_time(cmd[2]);
+	unsigned int msec = read_time(cmd[2], true);
 	int param = atoi(cmd[3].c_str());
 	set_part_param(name, msec, param);
 }
@@ -150,14 +159,26 @@ bool process_flash_cmd(vector<string> cmd)
 	if (cmd.size() != 4)
 	{
 		printf("ERROR: flash command does not take %d arguments\n", cmd.size() - 1);
+		return false;
 	}
 
 	Color c = read_color(cmd[1]);
-	unsigned int msec = read_time(cmd[2]);
+	unsigned int msec = read_time(cmd[2], true);
 	unsigned int dur = read_time(cmd[3]);
 	
 	add_flash(msec, dur, c);
 	
+	return true;
+}
+
+bool process_tframe_cmd(vector<string> cmd)
+{
+	if (cmd.size() != 2)
+	{
+		printf("ERROR: tframe command does not take %d arguments\n", cmd.size() - 1);
+		return false;
+	}
+	time_frame = read_time(cmd[1]);
 	return true;
 }
 
@@ -176,6 +197,19 @@ bool process_cmd(vector<string> cmd)
 	if (cmd[0] == "flash")
 	{
 		return process_flash_cmd(cmd);
+	}
+	if (cmd[0] == "tframe")
+	{
+		return process_tframe_cmd(cmd);
+	}
+	if (cmd[0] == "include")
+	{
+		if (cmd.size() != 2)
+		{
+			printf("ERROR: include c command does not take %d arguments\n", cmd.size() - 1);
+			return false;
+		}
+		return process_demo_script(cmd[1].c_str());
 	}
 	
 	printf("WARNING: ignoring unknown command %s\n", cmd[0]);

@@ -1,0 +1,12 @@
+# flashback.demoscript
+flash r1g1b1	0s	200
+inst tunnel	0s	1.5s local
+flash r1g1b1	1s	200
+inst radial 	1s 	2.5s local
+flash r1g1b1	2s	200
+inst amiga	2s	3.5s local
+flash r1g1b1	3s	200
+inst slimy	3s	4.5s local
+flash r1g1b1	4s	200
+inst eclipse	4s	5.5s local
+
