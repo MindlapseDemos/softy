@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL.h>
+#include <SDL_thread.h>
 #include <mikmod.h>
 #include <gl.h>
 #include "softy.h"
@@ -18,13 +19,14 @@ bool init();
 void redraw();
 void handle_event(SDL_Event *event);
 void cleanup();
+int music_func(void *data);
 
 SDL_Surface *fbsurf;
 Image *fbimg;
 MODULE *mod;
 
 unsigned long start_time;
-bool music = false;	/* TODO: change this to true! */
+bool music = true;	/* TODO: change this to true! */
 
 int main(int argc, char **argv)
 {
@@ -129,15 +131,17 @@ bool init()
 			return false;
 		}
 		Player_Start(mod);
+		// start music thread
+		SDL_CreateThread(music_func, 0);
 	}
 
 	start_time = SDL_GetTicks();
-
+	
 	return true;
 }
 
 // frame interval = 1000 / fps
-#define FRAME_INTERVAL		25
+#define FRAME_INTERVAL		5
 
 #define SHOW_FPS
 void redraw()
@@ -146,7 +150,7 @@ void redraw()
 	unsigned int msec = SDL_GetTicks() - start_time;
 
 	if(msec - prev_frame < FRAME_INTERVAL) {
-		return;
+		//return;
 	}
 	prev_frame = msec;
 
@@ -166,7 +170,6 @@ void redraw()
 	}
 #endif
 
-	if(mod) MikMod_Update();
 }
 
 void handle_event(SDL_Event *event)
@@ -203,4 +206,12 @@ void handle_event(SDL_Event *event)
 void cleanup()
 {
 	tunnel_cleanup();
+}
+
+int music_func(void *data)
+{
+	while (true)
+	{
+		if(mod) MikMod_Update();
+	}
 }
