@@ -132,6 +132,7 @@ void slimy_run(unsigned int msec, int param)
 	glClearDepth(1);
 
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_PHONG);
 	glShadeModel(GL_FLAT);
 
 	glEnable(GL_LIGHT0);
