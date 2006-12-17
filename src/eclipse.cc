@@ -11,6 +11,8 @@
 static Image grad;
 static Image flame[FLAME_FRAMES];
 
+void progress(float);
+
 float sum_abs_noise(float x, float y, float z, int factors)
 {
 	double vec[] = {x, y, z};
@@ -39,6 +41,8 @@ bool eclipse_init(void)
 		return false;
 	}
 
+	float prog = 0.25;
+
 	for(int k=0; k<FLAME_FRAMES; k++) {
 		float scale = k * 0.1;
 		flame[k].x = flame[k].y = 400;
@@ -59,7 +63,7 @@ bool eclipse_init(void)
 
 					int gx = (int)(grad.x * (len - 0.05 + sum_abs_noise(x, y, k * 0.045, 6) * 0.5));
 
-					gx = MAX(MIN(gx, grad.x), 0);
+					gx = MAX(MIN(gx, (grad.x - 1)), 0);
 					ptr->c.r = grad.pixels[gx].c.r;
 					ptr->c.g = grad.pixels[gx].c.g;
 					ptr->c.b = grad.pixels[gx].c.b;
@@ -67,6 +71,9 @@ bool eclipse_init(void)
 				ptr++;
 			}
 		}
+
+		prog += 0.75 / (float)FLAME_FRAMES;
+		progress(prog);
 	}
 
 	return true;

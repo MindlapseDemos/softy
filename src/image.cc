@@ -55,6 +55,32 @@ void blit_ckey(Image *dst, int xpos, int ypos, const Image *src, const Color &ke
 	}
 }
 
+void blit_hack(Image *dst, int xpos, int ypos, const Image *src, const Color &key, int skip_lines)
+{
+	if(xpos >= dst->x || ypos >= dst->y) return;
+
+	int sx = MAX(xpos, 0);
+	int sy = MAX(ypos, 0);
+
+	int xlen = MIN(src->x - (sx - xpos), dst->x - sx);
+	int ylen = MIN(src->y - (sy - ypos), dst->y - sy);
+
+	const Color *sptr = src->pixels + (sy - ypos) * src->x + (sx - xpos);
+	Color *dptr = dst->pixels + sy * dst->x + sx;
+
+	for(int j=0; j<ylen; j++) {
+		for(int i=0; i<xlen; i++) {
+			if(j >= skip_lines && sptr->packed != key.packed) {
+				*dptr = *sptr;
+			}
+			dptr++;
+			sptr++;
+		}
+		dptr += dst->x - xlen;
+		sptr += src->x - xlen;
+	}
+}
+
 void blend(Image *dst, int xpos, int ypos, const Image *src, float t)
 {
 	if(xpos >= dst->x || ypos >= dst->y) return;

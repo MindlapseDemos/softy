@@ -105,13 +105,25 @@ void add_part_inst(std::string which, unsigned int start_msec,
 	parts[i].local.push_back(local_time);
 }
 
+
+void progress(float);
+
 bool init_demo()
 {
+	float prog = 0.0;
+
 	demo_end = 0;
 	for (unsigned int i=0; i<parts.size(); i++)
 	{
 		if (!parts[i].p.init || !parts[i].p.run) return false;
 		if (!parts[i].p.init()) return false;
+
+		if(i < parts.size() - 1) {
+			prog += 0.05;
+			progress(prog);
+		} else {
+			progress(1.0);
+		}
 		
 		// determine end of demo
 		for (unsigned int j=0; j<parts[i].stop.size(); j++)

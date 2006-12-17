@@ -21,6 +21,7 @@ void redraw();
 void handle_event(SDL_Event *event);
 void cleanup();
 int music_func(void *data);
+void progress(float progr);
 
 SDL_Surface *fbsurf;
 Image *fbimg;
@@ -28,6 +29,8 @@ unsigned int music_volume = 128;
 
 unsigned long start_time;
 bool music = false;	/* TODO: change this to true! */
+
+Image *prog_img, *loading_img;
 
 int main(int argc, char **argv)
 {
@@ -52,6 +55,14 @@ int main(int argc, char **argv)
 				fprintf(stderr, "unrecognized argument: %s\n", argv[i]);
 				return EXIT_FAILURE;
 			}
+		} else {
+			if(strcmp(argv[i], "-jobo") == 0) {
+				prog_img = new Image;
+				if(!load_image(prog_img, "data/secret.ppm")) {
+					delete prog_img;
+					prog_img = 0;
+				}
+			}
 		}
 	}
 
@@ -62,7 +73,7 @@ int main(int argc, char **argv)
 	}
 	SDL_WM_SetCaption("MLFC demo", 0);
 	SDL_ShowCursor(false);
-	
+		
 	if(!init()) {
 		SDL_Quit();
 		return EXIT_FAILURE;
@@ -92,8 +103,29 @@ bool init()
 	fbimg->x = 640;
 	fbimg->y = 480;
 
+	if(!prog_img) {
+		prog_img = new Image;
+		if(!load_image(prog_img, "data/progbar.ppm")) {
+			return false;
+		}
+	}
+
+	loading_img = new Image;
+	if(!load_image(loading_img, "data/loading.ppm")) {
+		return false;
+	}
+
+
+	if(SDL_MUSTLOCK(fbsurf)) SDL_LockSurface(fbsurf);
+	fbimg->pixels = (Color*)fbsurf->pixels;
+
+	blit(fbimg, 0, 0, loading_img);
+
+	if(SDL_MUSTLOCK(fbsurf)) SDL_UnlockSurface(fbsurf);
+
 	fglCreateContext();
 
+	progress(0.0);
 
 	// add parts to demo system
 	add_part(Part(slimy_init_wrapper, slimy_run), "slimy");
@@ -101,10 +133,10 @@ bool init()
 	add_part(Part(radial_init, radial_run), "radial");
 	add_part(Part(amiga_init_wrapper, amiga_run), "amiga");
 	add_part(Part(glow_init_wrapper, glow_run), "glow");
-	//add_part(Part(eclipse_init, eclipse_run), "eclipse");
+	add_part(Part(eclipse_init, eclipse_run), "eclipse");	// this also calls progress inside
 
-	//add_slide("data/manga.ppm", 0, 2000, 10000, -100, -100, 100, 100);
-	
+	if(SDL_MUSTLOCK(fbsurf)) SDL_UnlockSurface(fbsurf);
+
 	if (!process_demo_script("demoscript"))
 	{
 		printf("ERROR: bad demoscript\n");
@@ -163,7 +195,7 @@ void redraw()
 	if(music)
 	{
 		sdlvf_check();
-		sdlvf_volume(music_volume);
+		/*sdlvf_volume(music_volume);*/
 	}
 }
 
@@ -184,7 +216,7 @@ void handle_event(SDL_Event *event)
 	case SDL_KEYUP:
 		if (event->key.keysym.sym == SDLK_SPACE)
 		{
-			printf("msec = %d\n", SDL_GetTicks() - start_time);
+			printf("msec = %lu\n", SDL_GetTicks() - start_time);
 		}
 		break;
 
@@ -212,3 +244,16 @@ int music_func(void *data)
 	}
 }
 */
+
+void progress(float prog)
+{
+	if(SDL_MUSTLOCK(fbsurf)) SDL_LockSurface(fbsurf);
+	fbimg->pixels = (Color*)fbsurf->pixels;
+
+	Color ckey;
+	ckey.c.r = 255; ckey.c.g = ckey.c.b = 0;
+	blit_hack(fbimg, 0, 0, prog_img, ckey, (int)(480.0 * (1.0 - prog)));
+
+	if(SDL_MUSTLOCK(fbsurf)) SDL_UnlockSurface(fbsurf);
+	SDL_Flip(fbsurf);
+}
