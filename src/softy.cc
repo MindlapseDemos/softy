@@ -160,7 +160,11 @@ void redraw()
 	}
 #endif
 
-	if(music) sdlvf_check();
+	if(music)
+	{
+		sdlvf_check();
+		sdlvf_volume(music_volume);
+	}
 }
 
 void handle_event(SDL_Event *event)

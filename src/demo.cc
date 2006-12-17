@@ -309,7 +309,7 @@ void run_demo(unsigned int msec)
 			Color fade_to;
 			fade_to.packed = 0;
 			int t = ((msec - (demo_end - fade_dur)) * 255) / fade_dur;
-			music_volume = 128 - t / 2;
+			music_volume = 255 - t;
 			for (unsigned int i=0; i<640*480; i++)
 			{
 				*dst++ = Lerp(*dst, fade_to, t);

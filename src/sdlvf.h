@@ -72,6 +72,11 @@ void sdlvf_done(void);
 char *sdlvf_strerror(int);
 
 /*
+ * Sets the current playback volume (range 0-255)
+ */
+void sdlvf_volume(int);
+
+/*
  * Close the C++-supporting block if needed.
  */
 #ifdef __cplusplus

@@ -48,6 +48,7 @@ static char *audio_errors[] = {
  */
 static OggVorbis_File audio_vf;
 static volatile int audio_stopped, audio_reopen;
+static int volume = 255;
 
 /*
  * This function is called by SDL when more audio data is needed.
@@ -59,7 +60,11 @@ static void audio_callback(void *userdata, Uint8 *stream, int len)
 	static int buflen = 0;
 	static int curr = -1;
 	static int stopped = 0, reopen = 0;
-
+	static short *samples;
+	static int sample_count, i;
+	samples = stream;
+	sample_count = len / 2;
+	
 	/* local variables */
 	int filled = 0;
 
@@ -97,6 +102,15 @@ static void audio_callback(void *userdata, Uint8 *stream, int len)
 			break;
 		}
 		filled += read;
+	}
+
+	/* adjust volume */
+	if (volume < 255)
+	{
+		for (i=0; i<sample_count; i++)
+		{
+			*samples++ = (volume * (*samples)) / 255;
+		}
 	}
 }
 
@@ -199,4 +213,12 @@ void sdlvf_done(void)
 char *sdlvf_strerror(int error)
 {
 	return audio_errors[error];
+}
+
+void sdlvf_volume(int vol)
+{
+	int v = vol;
+	if (vol > 255) v = 255;
+	if (vol < 0) v = 0;
+	volume = v;
 }
