@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <SDL.h>
 #include <SDL_thread.h>
-#include <mikmod.h>
 #include <gl.h>
 #include "softy.h"
 #include "demo.h"
 #include "demoscript.h"
+#include "sdlvf.h"
 
 // parts
 #include "p_tunnel.h"
@@ -14,6 +14,7 @@
 #include "p_radial.h"
 #include "p_slimy.h"
 #include "p_amiga.h"
+#include "p_glow.h"
 
 bool init();
 void redraw();
@@ -23,11 +24,10 @@ int music_func(void *data);
 
 SDL_Surface *fbsurf;
 Image *fbimg;
-MODULE *mod;
 unsigned int music_volume = 128;
 
 unsigned long start_time;
-bool music = true;	/* TODO: change this to true! */
+bool music = false;	/* TODO: change this to true! */
 
 int main(int argc, char **argv)
 {
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 	if(!(fbsurf = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE | (fullscreen ? SDL_FULLSCREEN : 0)))) {
 		fprintf(stderr, "failed to init video\n");
 		return EXIT_FAILURE;
@@ -84,6 +84,7 @@ int main(int argc, char **argv)
 
 bool slimy_init_wrapper() {return slimy_init() != -1;}
 bool amiga_init_wrapper() {return amiga_init() != -1;}
+bool glow_init_wrapper() {return glow_init() != -1;}
 
 bool init()
 {	
@@ -93,23 +94,15 @@ bool init()
 
 	fglCreateContext();
 
+
 	// add parts to demo system
 	add_part(Part(slimy_init_wrapper, slimy_run), "slimy");
 	add_part(Part(tunnel_init, tunnel_run), "tunnel");
 	add_part(Part(radial_init, radial_run), "radial");
 	add_part(Part(amiga_init_wrapper, amiga_run), "amiga");
-	add_part(Part(eclipse_init, eclipse_run), "eclipse");
+	add_part(Part(glow_init_wrapper, glow_run), "glow");
+	//add_part(Part(eclipse_init, eclipse_run), "eclipse");
 
-	// demoscript
-	//Color flash;
-	//flash.packed = 0xffffff;
-	//add_flash(2000, 2000, flash);
-	//set_part_param("tunnel", 5000, 2);
-	//add_part_inst("eclipse", 0, 21032141, true);
-	//add_part_inst("amiga", 2000, 5000, true);
-	//add_part_inst("tunnel", 0, 2500, true);
-	//add_part_inst("radial", 4500, 10000, true);
-	//add_part_inst("slimy", 7000, 15000, true);
 	if (!process_demo_script("demoscript"))
 	{
 		printf("ERROR: bad demoscript\n");
@@ -120,25 +113,12 @@ bool init()
 	if (!init_demo()) return false;
 
 	if(music) {
-		MikMod_RegisterAllDrivers();
-		MikMod_RegisterAllLoaders();
-
-		md_mode |= DMODE_SOFT_MUSIC;
-		if(MikMod_Init("") != 0) {
-			fprintf(stderr, "mikmod init failed: %s\n", MikMod_strerror(MikMod_errno));
-			fprintf(stderr, "to run without music use -m\n");
+		if(sdlvf_init("data/music.ogg") == -1) {
+			fprintf(stderr, "failed to load data/music.ogg, use -m to run without music\n");
 			return false;
 		}
-		atexit(MikMod_Exit);
-
-		if(!(mod = Player_Load("data/music.mod", 4, 0))) {
-			fprintf(stderr, "failed to load %s: %s\n", "data/music.mod", MikMod_strerror(MikMod_errno));
-			fprintf(stderr, "to run without music use -m\n");
-			return false;
-		}
-		Player_Start(mod);
-		// start music thread
-		SDL_CreateThread(music_func, 0);
+		atexit(sdlvf_done);
+		//SDL_CreateThread(music_func, 0);
 	}
 
 	start_time = SDL_GetTicks();
@@ -147,7 +127,7 @@ bool init()
 }
 
 // frame interval = 1000 / fps
-#define FRAME_INTERVAL		5
+#define FRAME_INTERVAL		25
 
 #define SHOW_FPS
 void redraw()
@@ -155,8 +135,10 @@ void redraw()
 	static unsigned int prev_frame = -100;
 	unsigned int msec = SDL_GetTicks() - start_time;
 
+	// exo logo pou ton bazo ton gamo-framelimiter :)
+	// to slimy effect einai framerate dependent
 	if(msec - prev_frame < FRAME_INTERVAL) {
-		//return;
+		return;
 	}
 	prev_frame = msec;
 
@@ -176,12 +158,12 @@ void redraw()
 	}
 #endif
 
+	if(music) sdlvf_check();
 }
 
 void handle_event(SDL_Event *event)
 {
 	static int esc_pressed;
-	static int repl = 1;
 	switch(event->type) {
 	case SDL_KEYDOWN:
 		if(event->key.keysym.sym == SDLK_ESCAPE) {
@@ -204,6 +186,7 @@ void cleanup()
 	tunnel_cleanup();
 }
 
+/*
 int music_func(void *data)
 {
 	while (true)
@@ -216,3 +199,4 @@ int music_func(void *data)
 		SDL_Delay(5);
 	}
 }
+*/

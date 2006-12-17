@@ -10,9 +10,9 @@ static int xres = 640;
 static int yres = 480;
 static int vp_x, vp_y;
 
-void draw_amiga(unsigned int msec, int mirror);
-void draw_plane(void);
-void sphere(float rad, int vpoints, float umax, float vmax);
+static void draw_amiga(unsigned int msec, int mirror);
+static void draw_plane(void);
+static void sphere(float rad, int vpoints, float umax, float vmax);
 
 static unsigned int amiga_tex;
 
@@ -24,6 +24,7 @@ static float mirror_color[] = {0.2, 0.4, 0.7, 1};
 static float sph_mir_col[4];
 
 extern unsigned int *cfb;
+unsigned int *over1;
 
 int amiga_init(void)
 {
@@ -36,11 +37,14 @@ int amiga_init(void)
 	if(!(img = load_ppm("data/amiga.ppm", &tex_x, &tex_y))) {
 		return -1;
 	}
-
 	glGenTextures(1, &amiga_tex);
 	glBindTexture(GL_TEXTURE_2D, amiga_tex);
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, tex_x, tex_y, 0, GL_BGRA, GL_UNSIGNED_BYTE, img);
 	free_ppm(img);
+
+	if(!(over1 = load_ppm("data/phong.ppm", 0, 0))) {
+		return -1;
+	}
 
 	sph_mir_col[0] = mirror_color[0] * sph_diffuse[0];
 	sph_mir_col[1] = mirror_color[1] * sph_diffuse[1];
@@ -52,6 +56,8 @@ int amiga_init(void)
 
 void amiga_run(unsigned int msec, int param)
 {
+	int i, j;
+	unsigned int *sptr, *dptr;
 	float lpos[][4] = {
 		{-100, 100, 100, 1},
 		{0, 0, 0, 1}
@@ -113,6 +119,18 @@ void amiga_run(unsigned int msec, int param)
 	/*glDisable(GL_LIGHT1);*/
 
 	memcpy(cfb + ((yres - vp_y) / 2) * xres, fglGetFrameBuffer(), vp_x * vp_y * 4);
+
+	dptr = cfb;
+	sptr = over1;
+	for(j=0; j<480; j++) {
+		for(i=0; i<640; i++) {
+			unsigned int col = *sptr++;
+			if(col != 0x00ff0000) {
+				*dptr = col;
+			}
+			dptr++;
+		}
+	}
 }
 
 static float squish(float x)
@@ -127,7 +145,7 @@ static float squish(float x)
 	return 1.0 - sin(3.0 * PI * x) * falloff * 0.25;
 }
 
-void draw_amiga(unsigned int msec, int mirror)
+static void draw_amiga(unsigned int msec, int mirror)
 {
 	float sec = (float)msec / 1000.0;
 	float x, y, z, sy;
@@ -165,7 +183,7 @@ void draw_amiga(unsigned int msec, int mirror)
 	glPopMatrix();
 }
 
-void draw_plane(void)
+static void draw_plane(void)
 {
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, mirror_color);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, white);
@@ -202,7 +220,7 @@ static void sphere_vertex(float x, float y, float z, float rad, float u, float v
 #define SPH_Y(rho, theta, phi)	((rho) * cos(phi))
 #define SPH_Z(rho, theta, phi)	((rho) * sin(theta) * sin(phi))
 
-void sphere(float rad, int vpoints, float umax, float vmax)
+static void sphere(float rad, int vpoints, float umax, float vmax)
 {
 	float u0, u1, v0, v1;
 	float du, dv;

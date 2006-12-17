@@ -39,6 +39,10 @@ enum {
 	GL_TEXTURE_2D,
 	GL_TEXTURE_3D,
 	GL_TEXTURE_CUBE,
+	GL_TEXTURE_GEN_S,
+	GL_TEXTURE_GEN_T,
+	GL_TEXTURE_GEN_R,
+	GL_TEXTURE_GEN_Q,
 	GL_DEPTH_TEST,
 	GL_DEPTH_WRITE, /* set through glDepthMask() rather than glEnable/glDisable */
 	GL_BLEND,
@@ -49,6 +53,7 @@ enum {
 	GL_LINE_SMOOTH,
 	GL_POLYGON_SMOOTH,
 	GL_PHONG,	/* oh yeah :) */
+	GL_NORMAL_MAP,	/* my extension :) */
 	/* -- end of bit fields (acually bit offsets) -- */
 	_STATE_BITS_COUNT,
 
@@ -119,7 +124,18 @@ enum {
 	GL_BGRA,
 	
 	GL_UNSIGNED_BYTE = 800,
-	GL_UNSIGNED_SHORT
+	GL_UNSIGNED_SHORT,
+
+	GL_TEXTURE_GEN_MODE = 900,
+	GL_S,
+	GL_T,
+	GL_R,
+	GL_Q,
+	GL_OBJECT_LINEAR,
+	GL_EYE_LINEAR,
+	GL_SPHERE_MAP,
+	GL_OBJECT_PLANE,
+	GL_EYE_PLANE
 };
 
 enum {
@@ -187,6 +203,9 @@ void glDeleteTextures(GLsizei n, const GLuint *tex);
 GLboolean glIsTexture(GLuint tex);
 void glBindTexture(GLenum targ, GLuint tex);
 void glTexImage2D(GLenum targ, GLint lvl, GLint ifmt, GLsizei w, GLsizei h, GLint border, GLenum fmt, GLenum type, const GLvoid *pixels);
+
+/* texgen state */
+void glTexGeni(GLenum coord, GLenum pname, GLint param);
 
 /* matrix manipulation */
 void glMatrixMode(GLenum mode);

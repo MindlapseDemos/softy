@@ -613,6 +613,30 @@ void glTexImage2D(GLenum targ, GLint lvl, GLint ifmt, GLsizei w, GLsizei h, GLin
 }
 
 
+/* texgen state */
+void glTexGeni(GLenum coord, GLenum pname, GLint param)
+{
+	int i = coord - (int)GL_S;
+
+	CHECK_BEG_END();
+
+	if(coord < GL_S || coord > GL_Q) {
+		GL_ERROR(GL_INVALID_ENUM);
+		return;
+	}
+
+	if(pname == GL_TEXTURE_GEN_MODE) {
+		if(param < GL_OBJECT_LINEAR || param > GL_SPHERE_MAP || (param == GL_SPHERE_MAP && coord > GL_T)) {
+			GL_ERROR(GL_INVALID_ENUM);
+			return;
+		}
+		state.tgen[i].mode = param;
+	} else {
+		GL_ERROR(GL_INVALID_ENUM);
+	}
+}
+
+
 /* matrix manipulation */
 void glMatrixMode(GLenum mode) {
 	unsigned int mmode = mode - GL_MODELVIEW;

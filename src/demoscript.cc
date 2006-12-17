@@ -39,7 +39,7 @@ int classify_char(char c)
 	// whitespace
 	if (c == '\t') return 1;
 	if (c == ' ')  return 1;
-	if (c == 0xFF) return 1;
+	if (c == (char)0xFF) return 1;
 
 	// all other chars
 	return 2;
@@ -114,7 +114,7 @@ bool process_inst_cmd(vector<string> cmd)
 {
 	if (cmd.size() < 4) 
 	{
-		printf("ERROR: inst command does not take %d arguments\n", cmd.size() - 1);
+		printf("ERROR: inst command does not take %d arguments\n", (int)(cmd.size() - 1));
 		return false;
 	}
 	bool local = false;
@@ -212,7 +212,7 @@ bool process_cmd(vector<string> cmd)
 		return process_demo_script(cmd[1].c_str());
 	}
 	
-	printf("WARNING: ignoring unknown command %s\n", cmd[0]);
+	printf("WARNING: ignoring unknown command %s\n", cmd[0].c_str());
 
 	return true;
 }

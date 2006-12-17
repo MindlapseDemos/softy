@@ -60,6 +60,13 @@ struct state {
 	struct tex2d *tex[MAX_TEXTURES];
 	unsigned int btex;		/* texture bound */
 
+	/* texgen state */
+	struct {
+		int mode;
+		float eye_plane[4];
+		float obj_plane[4];
+	} tgen[4];
+
 	/* rendering state */
 	unsigned int prim;
 	struct frame_buffer fb;

@@ -37,8 +37,6 @@ float stars[NSTARS * 3];
 int slimy_init(void)
 {
 	int i;
-	float amb[] = {0.3, 0.3, 0.3, 0.0};
-	float lpos[] = {-100, 100, 100, 1.0};
 
 	vp_x = xres;
 	vp_y = (float)xres / ASPECT;
@@ -60,16 +58,7 @@ int slimy_init(void)
 
 	glClearColor(0, 0, 0, 0);
 	glClearDepth(1);
-
-	glDisable(GL_DEPTH_TEST);
-	glShadeModel(GL_FLAT);
-
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glLightfv(GL_LIGHT0, GL_POSITION, lpos);
-
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
-
+	
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(45.0, (float)vp_x / (float)vp_y, 1.0, 100.0);
@@ -132,8 +121,23 @@ void slimy_free(void)
 #define HSZ		(SZ / 2.0)
 void slimy_run(unsigned int msec, int param)
 {
+	static float amb[] = {0.3, 0.3, 0.3, 0.0};
+	static float lpos[] = {-100, 100, 100, 1.0};
+
 	int xoffs = (xres - slime_vp_x) / 2;
 	float t = (float)msec / 9.0;
+
+
+	glClearColor(0, 0, 0, 0);
+	glClearDepth(1);
+
+	glDisable(GL_DEPTH_TEST);
+	glShadeModel(GL_FLAT);
+
+	glEnable(GL_LIGHT0);
+	glLoadIdentity();
+	glLightfv(GL_LIGHT0, GL_POSITION, lpos);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
 
 	/* --------- draw the background --------- */
 	glClear(GL_COLOR_BUFFER_BIT);

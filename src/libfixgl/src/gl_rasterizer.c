@@ -524,6 +524,19 @@ static inline void fill_scanlines(int starty, int endy) {
 
 #ifdef INTERP_NORM
 					if(phong) {
+						if(tex && IS_ENABLED(GL_NORMAL_MAP)) {
+							int tx, ty;
+							uint32_t texel;
+	
+							tx = fixed_round(fixed_mul(u, fixedi(tex->x))) & tex->xmask;
+							ty = fixed_round(fixed_mul(v, fixedi(tex->y))) & tex->ymask;
+							texel = tex->pixels[(ty << tex->xpow) + tx];
+
+							/* XXX: reversing the axes */
+							nx = fixed_div((fixedi(GET_R(texel)) << 1) - fixed_255, fixed_255);
+							ny = fixed_div((fixedi(GET_B(texel)) << 1) - fixed_255, fixed_255);
+							nz = fixed_div((fixedi(GET_G(texel)) << 1) - fixed_255, fixed_255);
+						}
 						gl_phong_shade(nx, ny, nz, vx, vy, vz, &r, &g, &b, &a);
 						ia = fixed_int(fixed_mul(a, fixed_255));
 						ir = fixed_int(fixed_mul(r, fixed_255));
@@ -533,7 +546,7 @@ static inline void fill_scanlines(int starty, int endy) {
 #endif
 
 #ifdef INTERP_TEX
-					if(tex) {
+					if(tex && !IS_ENABLED(GL_NORMAL_MAP)) {
 						int tx, ty;
 						uint32_t texel;
 
@@ -543,8 +556,8 @@ static inline void fill_scanlines(int starty, int endy) {
 							v = fixed_div(v, w);
 						}
 #endif
-						tx = fixed_round(fixed_mul(u, fixedi(tex->x))) & tex->xmask;
-						ty = fixed_round(fixed_mul(v, fixedi(tex->y))) & tex->ymask;
+						tx = fixed_int(fixed_mul(u, fixedi(tex->x))) & tex->xmask;
+						ty = fixed_int(fixed_mul(v, fixedi(tex->y))) & tex->ymask;
 
 						texel = tex->pixels[(ty << tex->xpow) + tx];
 						ir = (ir * GET_R(texel)) >> 8;
