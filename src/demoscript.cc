@@ -152,6 +152,8 @@ bool process_param_cmd(vector<string> cmd)
 	unsigned int msec = read_time(cmd[2], true);
 	int param = atoi(cmd[3].c_str());
 	set_part_param(name, msec, param);
+	
+	return true;
 }
 
 bool process_flash_cmd(vector<string> cmd)

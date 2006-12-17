@@ -62,6 +62,26 @@ static std::vector<Color> flash_color;
 
 // slides
 std::vector<Slide> slides;
+std::map<std::string, Image*> slide_cache;
+
+Image *get_slide(std::string filename)
+{
+	if (slide_cache[filename])
+	{
+		return slide_cache[filename];
+	}
+
+	// try to load the image
+	Image *img = new Image;
+	if (!load_image(img, filename.c_str()))
+	{
+		delete img;
+		return 0;
+	}
+
+	slide_cache[filename] = img;
+	return img;
+}
 
 inline float Lerp(float a, float b, float t)
 {
@@ -106,11 +126,13 @@ bool init_demo()
 	// load slide images
 	for (unsigned int i=0; i<slides.size(); i++)
 	{
-		if (!load_image(&slides[i].img, slides[i].filename.c_str()))
+		Image *img = get_slide(slides[i].filename);
+		if (!img)
 		{
 			printf("Failed loading image: %s\n", slides[i].filename.c_str());
 			return false;
 		}
+		slides[i].img = *img;
 	}
 	
 	return true;
@@ -192,7 +214,7 @@ void run_demo(unsigned int msec)
 		else
 			rpart[0].run(msec, param[0]);
 	}
-	else
+	else if (rpart.size() == 2)
 	{
 		// two parts - crossfade
 		float fade_factor;	

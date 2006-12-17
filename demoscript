@@ -1,13 +1,13 @@
-inst glow 0s 50000s local
+#inst glow 0s 50000s local
 
-slide data/manga.ppm 0s 2s 10s 0 -480 0 0
-slide data/manga.ppm 12s 14s 0 0 0 0 480
+#slide data/manga.ppm 0s 2s 10s 0 -480 0 0
+#slide data/manga.ppm 12s 14s 0 0 0 0 480
 
 ## mlfc demoscript
 ## ---------------
 #
 ## part sequence
-#inst tunnel 	0s 	10s local
+inst tunnel 	0s 	10s local
 #inst radial 	8s 	20s local
 #inst amiga	18s	30s local
 #inst slimy	28s	40s local
@@ -22,14 +22,14 @@ slide data/manga.ppm 12s 14s 0 0 0 0 480
 #include flashback.demoscript
 #
 ## part params
-#tframe 0
-#param tunnel	1	1
-#param tunnel	5s	2
-#param tunnel	6s	3
-#param tunnel	7s	4
-#param tunnel	5s	5
-#param tunnel 	40s	1
-#
+tframe 0
+param tunnel	1	1
+param tunnel	5s	2
+param tunnel	6s	3
+param tunnel	7s	4
+param tunnel	8s	5
+param tunnel 	40s	1
+
 ## effects
 #flash r1g0b0	1s	500
 #flash r1g0.5b0	2s	500
