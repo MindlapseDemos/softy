@@ -181,6 +181,12 @@ void handle_event(SDL_Event *event)
 			}
 		}
 		break;
+	case SDL_KEYUP:
+		if (event->key.keysym.sym == SDLK_SPACE)
+		{
+			printf("msec = %d\n", SDL_GetTicks() - start_time);
+		}
+		break;
 
 	default:
 		break;

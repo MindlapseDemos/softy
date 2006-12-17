@@ -1,37 +1,35 @@
-#inst glow 0s 50000s local
+# mlfc demoscript
+# ---------------
 
-#slide data/manga.ppm 0s 2s 10s 0 -480 0 0
-#slide data/manga.ppm 12s 14s 0 0 0 0 480
+# part sequence
+inst	radial	0s		6s
+inst	tunnel	4.862s	37s	local
+inst slimy	35.2s	49s local
+inst amiga	47.8s	100s	local
 
-## mlfc demoscript
-## ---------------
-#
-## part sequence
-inst tunnel 	0s 	10s local
-#inst radial 	8s 	20s local
-#inst amiga	18s	30s local
-#inst slimy	28s	40s local
-#inst eclipse	38s	50s local
-#
-## flashbacks
-#tframe 49.5s
-#include flashback.demoscript
-#tframe 54.5s
-#include flashback.demoscript
-#tframe 59.5s
-#include flashback.demoscript
-#
+# slideshow
+tframe 5s
+slide data/softy.ppm 0s 2s 2s 640 85 150 85
+slide data/softy.ppm 4s 6s 0s 150 85 -340 85
+
 ## part params
-tframe 0
-param tunnel	1	1
-param tunnel	5s	2
-param tunnel	6s	3
-param tunnel	7s	4
-param tunnel	8s	5
-param tunnel 	40s	1
+tframe 8s
+param tunnel	1		1
+param tunnel	9162		2
+param tunnel 	15252	3
+param tunnel 	19500	4
+param tunnel 	19900	5
+param tunnel 	20300	6
+param tunnel 	20700	1
 
-## effects
-#flash r1g0b0	1s	500
-#flash r1g0.5b0	2s	500
-#flash r1g0.5b0	3s	500
-#flash r1g0b0.5	4s	500
+# effects
+tframe 8s
+flash r1g1b1 	9162 	200
+flash r1g1b1	15252	200
+flash r1g1b1	19500	200
+flash r1g1b1	19900	200
+flash r1g1b1	20300	200
+flash r1g1b1	20700	200
+
+tframe 0
+flash r1g1b1	41668	200

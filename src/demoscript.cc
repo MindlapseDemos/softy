@@ -195,7 +195,7 @@ bool process_slide_cmd(vector<string> cmd)
 	unsigned int start, stop, stay;
 	start = read_time(cmd[2], true);
 	stop = read_time(cmd[3], true);
-	stay = read_time(cmd[4], true);
+	stay = read_time(cmd[4]);
 	int sx,sy,dx,dy;
 	sx = atoi(cmd[5].c_str());
 	sy = atoi(cmd[6].c_str());
