@@ -34,5 +34,8 @@ void end_demo_at(unsigned int msec);
 
 void set_part_param(std::string which, unsigned int msec, int param);
 void add_flash(unsigned int msec, unsigned int dur, Color c);
+void add_slide(std::string filename, unsigned int msec_begin,
+			 unsigned int msec_end, unsigned int msec_stay,
+			 int sx, int sy, int dx, int dy);
 
 #endif // ndef _DEMO_H_

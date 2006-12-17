@@ -182,6 +182,29 @@ bool process_tframe_cmd(vector<string> cmd)
 	return true;
 }
 
+bool process_slide_cmd(vector<string> cmd)
+{
+	if (cmd.size() != 9)
+	{
+		printf("ERROR: slide command does not take %d arguments\n", cmd.size() - 1);
+		return false;
+	}
+
+	unsigned int start, stop, stay;
+	start = read_time(cmd[2], true);
+	stop = read_time(cmd[3], true);
+	stay = read_time(cmd[4], true);
+	int sx,sy,dx,dy;
+	sx = atoi(cmd[5].c_str());
+	sy = atoi(cmd[6].c_str());
+	dx = atoi(cmd[7].c_str());
+	dy = atoi(cmd[8].c_str());
+
+	add_slide(cmd[1], start, stop, stay, sx, sy, dx, dy);
+
+	return true;
+}
+
 bool process_cmd(vector<string> cmd)
 {
 	if (!cmd.size()) return true;
@@ -210,6 +233,10 @@ bool process_cmd(vector<string> cmd)
 			return false;
 		}
 		return process_demo_script(cmd[1].c_str());
+	}
+	if (cmd[0] == "slide")
+	{
+		return process_slide_cmd(cmd);
 	}
 	
 	printf("WARNING: ignoring unknown command %s\n", cmd[0].c_str());

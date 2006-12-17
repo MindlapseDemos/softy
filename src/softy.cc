@@ -103,6 +103,8 @@ bool init()
 	add_part(Part(glow_init_wrapper, glow_run), "glow");
 	//add_part(Part(eclipse_init, eclipse_run), "eclipse");
 
+	//add_slide("data/manga.ppm", 0, 2000, 10000, -100, -100, 100, 100);
+	
 	if (!process_demo_script("demoscript"))
 	{
 		printf("ERROR: bad demoscript\n");

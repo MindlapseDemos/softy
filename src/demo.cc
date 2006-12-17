@@ -29,6 +29,29 @@ struct PStruct
 	}
 };
 
+struct Slide
+{
+	std::string filename;
+	Image img;
+	unsigned int start;
+	unsigned int stop;
+	unsigned int stay;
+	int sx, sy, dx, dy;
+	Slide(){}
+	Slide(std::string filename, unsigned int start, unsigned int stop,
+		unsigned int stay, int sx, int sy, int dx, int dy)
+	{
+		this->filename = filename;
+		this->start = start;
+		this->stop = stop;
+		this->stay = stay;
+		this->sx = sx;
+		this->sy = sy;
+		this->dx = dx;
+		this->dy = dy;
+	}
+};
+
 static std::map<std::string, unsigned int> part_names;
 static std::vector<PStruct> parts;
 
@@ -36,6 +59,14 @@ static std::vector<PStruct> parts;
 static std::vector<unsigned int> flash_time;
 static std::vector<unsigned int> flash_dur;
 static std::vector<Color> flash_color;
+
+// slides
+std::vector<Slide> slides;
+
+inline float Lerp(float a, float b, float t)
+{
+	return a * (1.0f - t) + b * t;
+}
 
 void add_part(const Part &p, std::string name)
 {
@@ -71,6 +102,17 @@ bool init_demo()
 			}
 		}
 	}
+
+	// load slide images
+	for (unsigned int i=0; i<slides.size(); i++)
+	{
+		if (!load_image(&slides[i].img, slides[i].filename.c_str()))
+		{
+			printf("Failed loading image: %s\n", slides[i].filename.c_str());
+			return false;
+		}
+	}
+	
 	return true;
 }
 
@@ -137,12 +179,13 @@ void run_demo(unsigned int msec)
 	if(SDL_MUSTLOCK(fbsurf)) SDL_LockSurface(fbsurf);
 	cfb = (unsigned int*)(fbimg->pixels = fb = (Color*)fbsurf->pixels);
 	
-	if (!rpart.size())
-	{
+	//if (!rpart.size())
+	//{
 		// no part here - clear to black
-		memset(fb, 0xff, 640 * 480 * 4);
-	}
-	else if (rpart.size() == 1)
+	// forget it - clear anyway!	
+	memset(fb, 0, 640 * 480 * 4);
+	//}
+	if (rpart.size() == 1)
 	{
 		if (slocal[0])
 			rpart[0].run(msec - segment_start[0], param[0]);
@@ -215,6 +258,29 @@ void run_demo(unsigned int msec)
 		fbimg->pixels = fb = (Color*) fbsurf->pixels;;
 	}
 
+	// add slides
+	for (unsigned int i=0; i<slides.size(); i++)
+	{
+		if (msec < slides[i].start) continue;
+		if (msec >= slides[i].stop) continue;
+		if (slides[i].start == slides[i].stop) continue;
+		int t = msec - slides[i].start;
+		float ft = (float) t / (float) (slides[i].stop - slides[i].start);
+		int x = (int) Lerp((float) slides[i].sx, (float) slides[i].dx, ft);
+		int y = (int) Lerp((float) slides[i].sy, (float) slides[i].dy, ft);
+		Color ckey;
+		ckey.packed = 0x00FF0000;
+		blit_ckey(fbimg, x, y, &slides[i].img, ckey);
+	}
+	for (unsigned int i=0; i<slides.size(); i++)
+	{
+		if (msec < slides[i].stop) continue;
+		if (msec >= slides[i].stop + slides[i].stay) continue;
+		Color ckey;
+		ckey.packed = 0x00FF0000;
+		blit_ckey(fbimg, slides[i].dx, slides[i].dy, &slides[i].img, ckey);
+	}
+	
 	// add effects
 	// flashes
 	for (unsigned int f=0; f<flash_time.size(); f++)
@@ -272,4 +338,12 @@ void add_flash(unsigned int msec, unsigned int dur, Color c)
 	flash_time.push_back(msec);
 	flash_dur.push_back(dur);
 	flash_color.push_back(c);
+}
+
+void add_slide(std::string filename, unsigned int msec_begin,
+			 unsigned int msec_end, unsigned int msec_stay,
+			 int sx, int sy, int dx, int dy)
+{
+	slides.push_back(Slide(filename, msec_begin, msec_end, msec_stay,
+		sx, sy, dx, dy));
 }

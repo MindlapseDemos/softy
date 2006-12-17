@@ -1,5 +1,8 @@
 inst glow 0s 50000s local
 
+slide data/manga.ppm 0s 2s 10s 0 -480 0 0
+slide data/manga.ppm 12s 14s 0 0 0 0 480
+
 ## mlfc demoscript
 ## ---------------
 #
@@ -20,7 +23,7 @@ inst glow 0s 50000s local
 #
 ## part params
 #tframe 0
-#param tunnel	0s	1
+#param tunnel	1	1
 #param tunnel	5s	2
 #param tunnel	6s	3
 #param tunnel	7s	4
