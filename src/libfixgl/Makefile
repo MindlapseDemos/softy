@@ -1,7 +1,7 @@
 obj :=
 lib := libGL.a
 
-dbg := -g
+#dbg := -g
 opt := -O3 -ffast-math
 
 CC := gcc

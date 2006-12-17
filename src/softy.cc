@@ -28,13 +28,13 @@ Image *fbimg;
 unsigned int music_volume = 128;
 
 unsigned long start_time;
-bool music = false;	/* TODO: change this to true! */
+bool music = true;	/* TODO: change this to true! */
 
 Image *prog_img, *loading_img;
 
 int main(int argc, char **argv)
 {
-	bool fullscreen = false;
+	bool fullscreen = true;
 
 	for(int i=1; i<argc; i++) {
 		if(argv[i][0] == '-' && argv[i][2] == 0) {
