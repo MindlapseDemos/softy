@@ -25,7 +25,7 @@ void progress(float progr);
 
 SDL_Surface *fbsurf;
 Image *fbimg;
-unsigned int music_volume = 128;
+unsigned int music_volume = 255;
 
 unsigned long start_time;
 bool music = true;	/* TODO: change this to true! */
@@ -195,7 +195,7 @@ void redraw()
 	if(music)
 	{
 		sdlvf_check();
-		/*sdlvf_volume(music_volume);*/
+		if(music_volume < 255) sdlvf_volume(music_volume);
 	}
 }
 
