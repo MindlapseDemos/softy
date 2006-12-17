@@ -5,12 +5,23 @@
 inst	radial	0s		6s
 inst	tunnel	4.862s	37s	local
 inst slimy	35.2s	49s local
-inst amiga	47.8s	100s	local
+inst amiga	47.8s	62s	local
+inst glow		60.1s	74s	local
+inst eclipse	72.4s	89.4s	local
 
 # slideshow
 tframe 5s
 slide data/softy.ppm 0s 2s 2s 640 85 150 85
 slide data/softy.ppm 4s 6s 0s 150 85 -340 85
+tframe 72.4s
+slide data/manga.ppm 10s 12s 4s 640 0 0 0
+slide data/manga.ppm 16s	18s 0	0 0 640 0
+slide data/cred_1.ppm 11s 12s 3s 0 480 0 0
+slide data/cred_2.ppm 12s 13s 3s 0 480 0 0
+slide data/cred_3.ppm 13s 14s 3s 0 480 0 0
+slide data/cred_1.ppm 15s 16s 0s 0 0 -640 0
+slide data/cred_2.ppm 16s 17s 0s 0 0 -640 0
+slide data/cred_3.ppm 17s 18s 0s 0 0 -640 0
 
 ## part params
 tframe 8s
@@ -33,3 +44,12 @@ flash r1g1b1	20700	200
 
 tframe 0
 flash r1g1b1	41668	200
+flash r1g1b1	53979	200
+flash r1g1b1	66283	200
+flash r1g1b1	78561	200
+
+# flashback
+tframe 89.4s
+include flashback.demoscript
+tframe 88s
+include flashback.demoscript

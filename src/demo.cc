@@ -218,6 +218,7 @@ void run_demo(unsigned int msec)
 		// no part here - clear to black
 	// forget it - clear anyway!	
 	memset(fb, 0, 640 * 480 * 4);
+	memset(second_buffer, 0, 640 * 480 * 4);
 	//}
 	if (rpart.size() == 1)
 	{
@@ -295,24 +296,26 @@ void run_demo(unsigned int msec)
 	// add slides
 	for (unsigned int i=0; i<slides.size(); i++)
 	{
-		if (msec < slides[i].start) continue;
-		if (msec >= slides[i].stop) continue;
-		if (slides[i].start == slides[i].stop) continue;
-		int t = msec - slides[i].start;
-		float ft = (float) t / (float) (slides[i].stop - slides[i].start);
-		int x = (int) Lerp((float) slides[i].sx, (float) slides[i].dx, ft);
-		int y = (int) Lerp((float) slides[i].sy, (float) slides[i].dy, ft);
-		Color ckey;
-		ckey.packed = 0x00FF0000;
-		blit_ckey(fbimg, x, y, &slides[i].img, ckey);
-	}
-	for (unsigned int i=0; i<slides.size(); i++)
-	{
-		if (msec < slides[i].stop) continue;
-		if (msec >= slides[i].stop + slides[i].stay) continue;
-		Color ckey;
-		ckey.packed = 0x00FF0000;
-		blit_ckey(fbimg, slides[i].dx, slides[i].dy, &slides[i].img, ckey);
+		if ((msec > slides[i].start) && (msec <= slides[i].stop))
+		{
+			if (slides[i].start != slides[i].stop) 
+			{   
+				int t = msec - slides[i].start;
+				float ft = (float) t / (float) (slides[i].stop - slides[i].start);
+				int x = (int) Lerp((float) slides[i].sx, (float) slides[i].dx, ft);
+				int y = (int) Lerp((float) slides[i].sy, (float) slides[i].dy, ft);
+				Color ckey;
+				ckey.packed = 0x00FF0000;
+				blit_ckey(fbimg, x, y, &slides[i].img, ckey);
+			}
+		}
+		if ((msec > slides[i].stop) && 
+			(msec <= slides[i].stop + slides[i].stay))
+		{
+			Color ckey;
+			ckey.packed = 0x00FF0000;
+			blit_ckey(fbimg, slides[i].dx, slides[i].dy, &slides[i].img, ckey);
+		}
 	}
 	
 	// add effects
