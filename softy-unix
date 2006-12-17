@@ -1,0 +1,38 @@
+#!/bin/sh
+
+os=`uname -s`
+arch=`uname -m`
+nobin='no binary for your architecture, type make to compile and run ./softy afterwards'
+
+case "$os" in
+# in final version...
+#IRIX*)
+#	bin/softy-sgi-irix $@
+#	;;
+
+Linux)
+	if [ "$arch" = 'i386' -o "$arch" = 'i586' -o "$arch" = 'i686' ]; then
+		bin/softy-x86-linux $@
+	elif [ "$arch" = 'x86_64' ]; then
+		bin/softy-x86_64-linux $@
+	else
+		echo $nobin
+		exit 1
+	fi
+	;;
+
+# in final version...
+#FreeBSD)
+#	if [ "$arch" = 'i386' -o "$arch" = 'i586' -o "$arch" = 'i686' ]; then
+#		bin/softy-x86-freebsd $@
+#	else
+#		echo $nobin
+#		exit 1
+#	fi
+#	;;
+
+*)
+	echo $nobin
+	exit 1
+	;;
+esac
