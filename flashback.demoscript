@@ -1,6 +1,6 @@
 # flashback.demoscript
 flash r1g1b1	0s	200
-inst tunnel	0s	1.5s local
+inst tunnel	0s	2s local
 flash r1g1b1	1s	200
 inst radial 	1s 	2s local
 flash r1g1b1	2s	200

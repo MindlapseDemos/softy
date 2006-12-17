@@ -10,6 +10,8 @@ inst glow		60.1s	74s	local
 inst eclipse	72.4s	89.4s	local
 
 # slideshow
+tframe 0s
+slide data/intro2.ppm 29.5s 32.5s 0s -640 0 640 0
 tframe 5s
 slide data/softy.ppm 0s 2s 2s 640 85 150 85
 slide data/softy.ppm 4s 6s 0s 150 85 -340 85
@@ -52,4 +54,6 @@ flash r1g1b1	78561	200
 tframe 89.4s
 include flashback.demoscript
 tframe 88s
+include flashback.demoscript
+tframe 96s
 include flashback.demoscript
