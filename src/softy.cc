@@ -32,19 +32,6 @@ bool music = true;	/* TODO: change this to true! */
 
 Image *prog_img, *loading_img;
 
-int draw_thread(void *data)
-{
-	for(;;) {
-		SDL_Event event;
-		while(SDL_PollEvent(&event)) {
-			handle_event(&event);
-		}
-		
-		redraw();
-	}
-	return 0;
-}
-
 int main(int argc, char **argv)
 {
 	bool fullscreen = true;
@@ -92,7 +79,6 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	/*
 	for(;;) {
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
@@ -101,10 +87,7 @@ int main(int argc, char **argv)
 		
 		redraw();
 	}
-	*/
 
-	SDL_WaitThread(SDL_CreateThread(draw_thread, 0), 0);
-	
 	cleanup();
 
 	return 0;
@@ -169,7 +152,7 @@ bool init()
 			return false;
 		}
 		atexit(sdlvf_done);
-		SDL_CreateThread(music_func, 0);
+		//SDL_CreateThread(music_func, 0);
 	}
 
 	start_time = SDL_GetTicks();
@@ -181,7 +164,6 @@ bool init()
 #define FRAME_INTERVAL		25
 
 #define SHOW_FPS
-
 void redraw()
 {
 	static unsigned int prev_frame = -100;
@@ -210,6 +192,11 @@ void redraw()
 	}
 #endif
 
+	if(music)
+	{
+		sdlvf_check();
+		if(music_volume < 255) sdlvf_volume(music_volume);
+	}
 }
 
 void handle_event(SDL_Event *event)
@@ -243,22 +230,20 @@ void cleanup()
 	tunnel_cleanup();
 }
 
-
+/*
 int music_func(void *data)
 {
 	while (true)
 	{
-		if(music)
+		if(mod) 
 		{
-			sdlvf_check();
-			if(music_volume < 255) sdlvf_volume(music_volume);
+			Player_SetVolume(music_volume);
+			MikMod_Update();
 		}
-
-		SDL_Delay(25);
+		SDL_Delay(5);
 	}
-	return 0;
 }
-
+*/
 
 void progress(float prog)
 {
