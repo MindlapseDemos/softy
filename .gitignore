@@ -1,3 +1,5 @@
 *.o
 *.swp
 *.d
+*.a
+softy
