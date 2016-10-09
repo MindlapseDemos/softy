@@ -3,6 +3,8 @@ Softy / MLFC
 
 Software rendering demo we made for an on-line demo competition.
 
+![screenshot](http://content.pouet.net/files/screenshots/00028/00028296.jpg)
+
 Pouet page: http://www.pouet.net/prod.php?which=28296
 
 Release archive with binaries: http://nuclear.mutantstargoat.com/sw/demos/softy-mlfc.tar.gz
